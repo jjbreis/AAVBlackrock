@@ -13,6 +13,7 @@ function AAV_MatchStub:new()
 	self.bracket = 0
 	self.result = 0 -- 0 = unknown, 1 = win, 2 = loss, 3 = draw
 	self.server = GetRealmName()
+	self.replay = 0
 	self.combatans = {
 		dudes = {}
 	}
@@ -23,7 +24,7 @@ function AAV_MatchStub:new()
 		[1] = {},
 	}
 	self.data = {}
-	
+
 	self.map = 0 -- default
 	--self.map = GetZoneText()
 	for k,v in pairs(AAV_COMM_MAPS) do
@@ -56,25 +57,19 @@ end
 function AAV_MatchStub:newDude(unit, team, max)
 	local id
 	if (UnitIsPlayer(unit)) then id = max else id = max-10 
-	print("1st check from newDude")
 	end
 	
 	if (self.combatans.dudes[UnitGUID(unit)]) then self.combatans.dudes[UnitGUID(unit)] = nil else self.combatans.dudes[UnitGUID(unit)] = {} 
-		print("2nd check from newDude")
 	end
 	if (self.buffs[id]) then self.buffs[id] = nil else self.buffs[id] = {} 
-		print("3rd check from newDude")
 	end
 	if (self.debuffs[id]) then self.debuffs[id] = nil else self.debuffs[id] = {} 
-		print("4th check from newDude")
 	end
 	
 	self.combatans.dudes[UnitGUID(unit)].name = UnitName(unit)
 	_, self.combatans.dudes[UnitGUID(unit)].class = UnitClass(unit)
 	_, self.combatans.dudes[UnitGUID(unit)].race = UnitRace(unit)
 	self.combatans.dudes[UnitGUID(unit)].team = team -- 1 = friendly, 0 = hostile
-	print("team= " .. team)
-	print ("unit= " ..unit)
 	self.combatans.dudes[UnitGUID(unit)].player = UnitIsPlayer(unit)
 	self.combatans.dudes[UnitGUID(unit)].spec = ""
 	self.combatans.dudes[UnitGUID(unit)].ID = id
@@ -89,7 +84,6 @@ function AAV_MatchStub:newDude(unit, team, max)
 	if (atroxArenaViewerData.current.broadcast) then
 		
 	end
-	print("returning dudes")
 	return UnitGUID(unit), self.combatans.dudes[UnitGUID(unit)]
 end
 
@@ -202,7 +196,6 @@ function AAV_MatchStub:updateMatchPlayers(team, unit)
 		end
 	end
 	max = max + 1
-	print("Creating new dude with unit: "..unit)
 	return self:newDude(unit, team, max)
 	
 end
@@ -264,6 +257,9 @@ function AAV_MatchStub:setMatchEnd()
 	end
 end
 
+function AAV_MatchStub:setReplay(id)
+	self.replay = id;
+end
 ----
 -- creates a message and saves it.
 -- @param msg message string

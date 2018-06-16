@@ -30,8 +30,14 @@ SlashCmdList["ATROXARENAVIEWER"] = function(msg)
 				print("- " .. v)
 			end
 		end
+	elseif (msg == "ui") then
+		if(AAV_TableGui:isMatchesFrameShowing()) then
+			AAV_TableGui:hideMatchesFrame()
+		else
+			AAV_TableGui:showMatchesFrame()
+		end
 	
-	elseif (msg == "record") then
+--[[	elseif (msg == "record") then
 		
 		self:changeRecording()
 		
@@ -60,19 +66,20 @@ SlashCmdList["ATROXARENAVIEWER"] = function(msg)
 			end
 		else
 			print(L.NO_MATCHES_FOUND)
-		end
+		end ]]--
 	elseif (msg == "delete all") then
-		for k,v in pairs(atroxArenaViewerData.data) do
+		numOfMatches = #atroxArenaViewerData.data
+		for i = 1, numOfMatches do
 			parent:deleteMatch(1) 
 		end
-	elseif (string.find(msg, 'delete%s%d*')) then
+--[[	elseif (string.find(msg, 'delete%s%d*')) then
 		local num = tonumber(string.sub(msg, 8))
 		if (num) then			
 			self:deleteMatch(num)
 			print(L.CONF_MATCH_DELETED)
 		else
 			print(L.ERROR_WRONG_INPUT)
-		end
+		end ]]--
 	else
 	
 		print(L.CONF_HELP_LINE1)
@@ -82,6 +89,7 @@ SlashCmdList["ATROXARENAVIEWER"] = function(msg)
 		print(L.CONF_HELP_LINE5)
 		print(L.CONF_HELP_LINE6)
 		print(L.CONF_HELP_LINE7)
+		print(L.CONF_HELP_LINE8)
 
 	end
 	

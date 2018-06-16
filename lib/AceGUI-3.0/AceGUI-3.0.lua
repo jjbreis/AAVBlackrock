@@ -266,7 +266,6 @@ end
 			AceGUI already sets a handler to the event
 		:OnLayoutFinished(width, height) - called after a layout has finished, the width and height will be the width and height of the
 			area used for controls. These can be nil if the layout used the existing size to layout the controls.
-
 ]]
 
 --------------------------
@@ -591,7 +590,6 @@ function AceGUI:GetNextWidgetNum(type)
 end
 
 --[[ Widget Template
-
 --------------------------
 -- Widget Name		  --
 --------------------------
@@ -599,7 +597,6 @@ do
 	local Type = "Type"
 	
 	local function OnAcquire(self)
-
 	end
 	
 	local function OnRelease(self)
@@ -607,18 +604,15 @@ do
 		self.frame:Hide()
 	end
 	
-
 	local function Constructor()
 		local frame = CreateFrame("Frame",nil,UIParent)
 		local self = {}
 		self.type = Type
-
 		self.OnRelease = OnRelease
 		self.OnAcquire = OnAcquire
 		
 		self.frame = frame
 		frame.obj = self
-
 		--Container Support
 		--local content = CreateFrame("Frame",nil,frame)
 		--self.content = content
@@ -630,8 +624,6 @@ do
 	
 	AceGUI:RegisterWidgetType(Type,Constructor)
 end
-
-
 ]]
 
 -------------
@@ -642,7 +634,6 @@ end
 	A Layout is a func that takes 2 parameters
 		content - the frame that widgets will be placed inside
 		children - a table containing the widgets to layout
-
 ]]
 
 -- Very simple Layout, Children are stacked on top of each other down the left side
