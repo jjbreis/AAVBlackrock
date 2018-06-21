@@ -156,6 +156,7 @@ function atroxArenaViewer:OnInitialize()
 		time = 0,
 		move = 0,
 		broadcast = false,
+		autojoin = false,
 		record = true,
 		listening = "",
 		interval = 0.1,
@@ -513,6 +514,15 @@ function atroxArenaViewer:changeBroadcast()
 		
 	elseif (atroxArenaViewerData.current.broadcast == false) then
 		self:handleBroadcasting("start")
+	end
+end
+
+function atroxArenaViewer:changeAutojoin()
+	if (atroxArenaViewerData.current.autojoin == true) then
+		atroxArenaViewerData.current.autojoin = false
+		
+	elseif (atroxArenaViewerData.current.broadcast == false) then
+		atroxArenaViewerData.current.autojoin = true
 	end
 end
 
