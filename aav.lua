@@ -846,6 +846,7 @@ function atroxArenaViewer:handleEvents(val)
 		self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		self:UnregisterEvent("UNIT_HEALTH")
 		self:UnregisterEvent("UNIT_MANA")
+		self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_START")
 		self:UnregisterEvent("ARENA_OPPONENT_UPDATE")
 		self:UnregisterEvent("UPDATE_BATTLEFIELD_SCORE")
 		self:UnregisterEvent("UNIT_NAME_UPDATE")
@@ -1611,7 +1612,6 @@ function atroxArenaViewer:CHAT_MSG_SYSTEM(event, message)
 	local sub = string.sub(message,1,6)
 	if(sub == "Replay") then
 		local replay = string.sub(message,17)
-		print("hehe message sub is "..sub.." And replay is "..replay)
 		M:setReplay(replay)
 	end
 end
