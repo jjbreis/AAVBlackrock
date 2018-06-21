@@ -16,7 +16,7 @@ function AAV_Gui:createPlayerFrame(obj, bracket)
 	o:SetPoint("Center", 0, 0)
 	self:setPlayerFrameSize(o, bracket)
 	
-	local f = CreateFrame("Frame", "Player", o)
+	local f = CreateFrame("Frame", "MatchPlayer", o)
 	f:SetFrameStrata("HIGH")
 	f:SetWidth(560)
 	f:SetPoint("TOPLEFT", o, "TOPLEFT", 0, 0)
@@ -276,7 +276,7 @@ function AAV_Gui:createSeekerBar(parent, elapsed)
 	f.texture = t
 	
 	--c:SetAllPoints(parent)
-	f:SetPoint("BOTTOMLEFT", parent:GetName(), 25, 50)
+	f:SetPoint("BOTTOMLEFT", parent:GetName(), 55, 50)
 	f:Show()
 	
 	
@@ -289,7 +289,7 @@ function AAV_Gui:createSeekerBar(parent, elapsed)
 	a:SetStatusBarColor(1, 1, 1)
 	a:SetMinMaxValues(0, elapsed)
 	a:SetValue(0)
-	a:SetPoint("BOTTOMLEFT", parent, 25, 50)
+	a:SetPoint("BOTTOMLEFT", parent, 55, 50)
 	--a:SetPoint("TOPLEFT", speedframe, 0, 0)
 	a:Show()
 	
@@ -328,16 +328,6 @@ function AAV_Gui:createSeekerBar(parent, elapsed)
 	speed:SetJustifyH("LEFT")
 	speed:SetPoint("LEFT", slider, "RIGHT", 5, 0)
 	speed:Show()
-	
-	slider:SetScript("OnValueChanged", function(s)
-		speed:SetText(s:GetValue() .. "%") 
-		if (s:GetValue()>0) then 
-			atroxArenaViewerData.current.interval = s:GetValue() / 1000
-		else
-			atroxArenaViewerData.current.interval = 0
-		end
-	end)
-	
 	
 	--[[
 	parent:SetScript("OnMouseWheel", function(arg)
@@ -421,6 +411,17 @@ function AAV_Gui:createButtonDetail(parent)
 	
 	return detail
 end
+function AAV_Gui:createButtonPlay(parent)
+	
+	local pause = CreateFrame("BUTTON", "$parentViewDetail", parent, "UIPanelButtonTemplate")
+	pause:SetPoint("BOTTOMLEFT", parent, 10, 45)
+	pause:SetWidth(38)
+	pause:SetHeight(25)
+	pause:Show()
+
+	return pause
+end
+
 
 function AAV_Gui:createTeamHead(parent, posY, team)
 	
@@ -511,7 +512,7 @@ function AAV_Gui:createSeekerText(parent)
 	b:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
 	b:SetText("00:00.0")
 	b:SetJustifyH("LEFT")
-	b:SetPoint("LEFT", parent:GetName(), parent:GetWidth() + 15, 0)
+	b:SetPoint("LEFT", parent:GetName(), parent:GetWidth() + 5, 0)
 	b:Show()
 	
 	return b

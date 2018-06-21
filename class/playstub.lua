@@ -28,6 +28,7 @@ function AAV_PlayStub:new()
 	self.startTime = 0
 	self.matchTime = 0
 	self.viewdetail = true
+	self.isPlayOn = true
 	self.cclist = {} -- used for preventing multiple ccs on same icon
 	
 	----
@@ -735,6 +736,7 @@ function AAV_PlayStub:createPlayer(bracket, elapsed, broadcast)
 	if (not self.player) then 
 		self.origin, self.player, self.maptext = AAV_Gui:createPlayerFrame(self, bracket)
 		self.detail = AAV_Gui:createButtonDetail(self.origin)
+		self.playButton = AAV_Gui:createButtonPlay(self.origin)
 		self.seeker = {}
 		self.seeker.bar, self.seeker.back, self.seeker.slide, self.seeker.speedval, self.seeker.speed = AAV_Gui:createSeekerBar(self.player, elapsed)
 		self.seeker.status = AAV_Gui:createStatusText(self.origin)
@@ -743,8 +745,37 @@ function AAV_PlayStub:createPlayer(bracket, elapsed, broadcast)
 		
 		self.stats:Hide()
 		self.viewdetail = true
+		self.isPlayOn = true
 		
 		self.seeker.speedval:SetText(L.SPEED .. ":")
+		
+		self.seeker.slide:SetScript("OnValueChanged", function(s)
+			self.seeker.speed:SetText(s:GetValue() .. "%") 
+			if(self.isPlayOn) then
+				if (s:GetValue()>0) then 
+					atroxArenaViewerData.current.interval = s:GetValue() / 1000
+				else
+					atroxArenaViewerData.current.interval = 0
+				end
+			end
+		end)
+		
+		self.playButton:SetText("Pause")
+		self.playButton:SetScript("OnClick", function() 
+			self.isPlayOn = not self.isPlayOn
+			
+			if (self.isPlayOn) then
+				self.playButton:SetText("Pause")
+				if(self.seeker.slide:GetValue() >0 ) then
+					atroxArenaViewerData.current.interval = self.seeker.slide:GetValue() / 1000
+				else
+					atroxArenaViewerData.current.interval = 0
+				end
+			else
+				self.playButton:SetText("Play")
+				atroxArenaViewerData.current.interval = 0
+			end
+		end)
 		
 		self.detail:SetText(L.VIEW_STATS)
 		self.detail:SetScript("OnClick", function() 
@@ -752,11 +783,13 @@ function AAV_PlayStub:createPlayer(bracket, elapsed, broadcast)
 			
 			if (self.viewdetail) then
 				self.player:Show()
+				self.playButton:Show()
 				self.detail:SetText(L.VIEW_STATS)
 				self.stats:Hide()
 				-- go timer
 			else
 				self.player:Hide()
+				self.playButton:Hide()
 				self.detail:SetText(L.VIEW_MATCH)
 				self.stats:Show()
 				-- stop timer
