@@ -799,7 +799,7 @@ function AAV_Gui:createMinimapIcon(parent, player)
 			
 			-- OPTIONS
 			reset(info)
-			info.text       = "AAV Options"
+			info.text       = "Options"
 			info.notCheckable = true
 			info.notClickable = false
 			info.hasArrow	= true
@@ -807,16 +807,7 @@ function AAV_Gui:createMinimapIcon(parent, player)
 			
 			UIDropDownMenu_AddButton(info, level)
 			
-			-- QUEUE OPTIONS
-			reset(info)
-			info.text       = "Queue Options"
-			info.notCheckable = true
-			info.notClickable = false
-			info.hasArrow	= true
-			info.func       = nil
-			
-			UIDropDownMenu_AddButton(info, level)
-			
+						
 			-- DELETE MATCH
 			reset(info)
 			info.text       = "Delete"
@@ -1142,17 +1133,6 @@ function AAV_Gui:createMinimapIcon(parent, player)
 				
 				UIDropDownMenu_AddButton(info, level)
 				
-			elseif (UIDROPDOWNMENU_MENU_VALUE == "Options") then
-			reset(info)
-			info.text       = "Enable Auto-Join Queue"
-			info.notCheckable = false
-			info.notClickable = false
-			info.hasArrow	= false
-			info.checked	= atroxArenaViewerData.current.autojoin
-			info.func       = function() parent:changeAutojoin() end
-			UIDropDownMenu_AddButton(info, level)
-			info.checked	= nil
-			
 			elseif (UIDROPDOWNMENU_MENU_VALUE == "Export match") then
 				-- PLAY MATCH
 				

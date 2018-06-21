@@ -156,7 +156,6 @@ function atroxArenaViewer:OnInitialize()
 		time = 0,
 		move = 0,
 		broadcast = false,
-		autojoin = false,
 		record = true,
 		listening = "",
 		interval = 0.1,
@@ -517,15 +516,6 @@ function atroxArenaViewer:changeBroadcast()
 	end
 end
 
-function atroxArenaViewer:changeAutojoin()
-	if (atroxArenaViewerData.current.autojoin == true) then
-		atroxArenaViewerData.current.autojoin = false
-		
-	elseif (atroxArenaViewerData.current.broadcast == false) then
-		atroxArenaViewerData.current.autojoin = true
-	end
-end
-
 function atroxArenaViewer:changeRecording()
 	if (atroxArenaViewerData.current.record == true) then
 		if (atroxArenaViewerData.current.inArena == false) then
@@ -541,6 +531,7 @@ function atroxArenaViewer:changeRecording()
 		print(L.CMD_ENABLE_RECORDING)
 	end
 end
+
 
 function atroxArenaViewer:OnDisable()
     
@@ -559,7 +550,6 @@ end
 ----
 -- status 1 = in queue, in arena: message board; 2 = entered
 function atroxArenaViewer:UPDATE_BATTLEFIELD_STATUS(event, status)
-
 	if (atroxArenaViewerData.current.broadcast or atroxArenaViewerData.current.record and M) then
 		if (atroxArenaViewerData.current.broadcast and status == 1 and currentstate == 2) then
 		-- unqueue
@@ -572,6 +562,7 @@ function atroxArenaViewer:UPDATE_BATTLEFIELD_STATUS(event, status)
 			}
 			self:SendCommMessage(AAV_COMM_LOOKUPBROADCAST, self:Serialize(message["std"]), self:getCommMethod(), nil)
 			message["std"].state = nil
+			
 		elseif (atroxArenaViewerData.current.broadcast and status == 1 and not atroxArenaViewerData.current.inArena) then
 			currentstate = 2
 			message["std"] = {
@@ -582,6 +573,7 @@ function atroxArenaViewer:UPDATE_BATTLEFIELD_STATUS(event, status)
 			}
 			self:SendCommMessage(AAV_COMM_LOOKUPBROADCAST, self:Serialize(message["std"]), self:getCommMethod(), nil)
 			message["std"].state = nil
+			
 		elseif (status == 1 and atroxArenaViewerData.current.inArena) then
 			
 			local found
