@@ -574,11 +574,13 @@ function atroxArenaViewer:UPDATE_BATTLEFIELD_STATUS(event, status)
 			self:SendCommMessage(AAV_COMM_LOOKUPBROADCAST, self:Serialize(message["std"]), self:getCommMethod(), nil)
 			message["std"].state = nil
 			
-		elseif (status == 1 and atroxArenaViewerData.current.inArena) then		
+		elseif (status == 1 and atroxArenaViewerData.current.inArena) then
 			local found
 			for i=0,1 do
 				found = false
 				local teamName, oldRating, newRating, teamSkill = GetBattlefieldTeamInfo(i)
+--newrating and oldrating is broken on AT feelsbadman
+--				print("Oldrating: "..oldRating.." newrating: "..newRating)
 				if (teamName ~= "") then
 					for j=1,3 do
 						local name,_,ratiing = GetArenaTeam(j)
@@ -592,7 +594,7 @@ function atroxArenaViewer:UPDATE_BATTLEFIELD_STATUS(event, status)
 				if not (found) then
 					--local teamName, oldRating, newRating, teamSkill = GetBattlefieldTeamInfo(i)
 					if (teamName ~= "") then
-						M:setTeams(1, teamName, newRating, newRating - oldRating, teamSkill)
+						M:setTeams(1, teamName, 0, newRating - oldRating, teamSkill)
 					else
 						M:setTeams(i, "Team " .. (i+1), 0, 0, 0)
 					end

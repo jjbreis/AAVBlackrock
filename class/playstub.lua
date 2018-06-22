@@ -792,12 +792,14 @@ function AAV_PlayStub:createPlayer(bracket, elapsed, broadcast)
 			if (self.viewdetail) then
 				self.player:Show()
 				self.playButton:Show()
+				self.replayButton:Show()
 				self.detail:SetText(L.VIEW_STATS)
 				self.stats:Hide()
 				-- go timer
 			else
 				self.player:Hide()
 				self.playButton:Hide()
+				self.replayButton:Hide()
 				self.detail:SetText(L.VIEW_MATCH)
 				self.stats:Show()
 				-- stop timer
