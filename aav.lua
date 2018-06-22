@@ -574,8 +574,7 @@ function atroxArenaViewer:UPDATE_BATTLEFIELD_STATUS(event, status)
 			self:SendCommMessage(AAV_COMM_LOOKUPBROADCAST, self:Serialize(message["std"]), self:getCommMethod(), nil)
 			message["std"].state = nil
 			
-		elseif (status == 1 and atroxArenaViewerData.current.inArena) then
-			
+		elseif (status == 1 and atroxArenaViewerData.current.inArena) then		
 			local found
 			for i=0,1 do
 				found = false
@@ -1611,9 +1610,11 @@ function atroxArenaViewer:CHAT_MSG_ADDON(event, prefix)
 end
 
 function atroxArenaViewer:CHAT_MSG_SYSTEM(event, message)
-	local sub = string.sub(message,1,6)
-	if(sub == "Replay") then
-		local replay = string.sub(message,17)
-		M:setReplay(replay)
+	if(M) then
+		local sub = string.sub(message,1,6)
+		if(sub == "Replay") then
+			local replay = string.sub(message,17)
+			M:setReplay(replay)
+		end
 	end
 end

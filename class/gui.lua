@@ -413,7 +413,7 @@ function AAV_Gui:createButtonDetail(parent)
 end
 function AAV_Gui:createButtonPlay(parent)
 	
-	local pause = CreateFrame("BUTTON", "$parentViewDetail", parent, "UIPanelButtonTemplate")
+	local pause = CreateFrame("BUTTON", "$parentPlayButton", parent, "UIPanelButtonTemplate")
 	pause:SetPoint("BOTTOMLEFT", parent, 10, 45)
 	pause:SetWidth(38)
 	pause:SetHeight(25)
@@ -421,7 +421,25 @@ function AAV_Gui:createButtonPlay(parent)
 
 	return pause
 end
+function AAV_Gui:createButtonReplay(parent)
+	
+	local replay = CreateFrame("BUTTON", "$parentViewreplay", parent, "UIPanelButtonTemplate")
+	replay:SetPoint("BOTTOMRIGHT", -190, 15)
+	replay:SetWidth(125)
+	replay:SetHeight(25)
+	replay:Show()
+	replay:SetText("Replay from 0.00")
 
+	
+--[[local replayinfo = parent:CreateFontString("$parentReplayInfo", "ARTWORK", "GameFontNormal")
+	replayinfo:SetFont("Fonts\\FRIZQT__.TTF", 10, "OUTLINE")
+	replayinfo:SetJustifyH("LEFT")
+	replayinfo:SetPoint("BOTTOMRIGHT", -250, 22)
+	replayinfo:SetText("Replay from current time:")
+	replayinfo:Show() ]]--
+	
+	return replay
+end
 
 function AAV_Gui:createTeamHead(parent, posY, team)
 	

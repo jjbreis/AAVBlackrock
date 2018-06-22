@@ -372,6 +372,7 @@ function AAV_PlayStub:updatePlayerTick()
 	--self.seeker.tick:SetText(a .. math.floor(tick/60) .. ":" .. b .. math.floor(tick%60) .. "." .. math.floor(tick%60*10%10))
 	self.seeker.tick:SetText(format)
 	self.seeker.bar:SetValue(self:getTickTime())
+	self.replayButton:SetText("Replay from "..format)
 end
 
 
@@ -732,11 +733,12 @@ end
 -- @param elapsed time
 -- @param broadcast true = watches a broadcasts, false = local playing
 function AAV_PlayStub:createPlayer(bracket, elapsed, broadcast)
-
+	
 	if (not self.player) then 
 		self.origin, self.player, self.maptext = AAV_Gui:createPlayerFrame(self, bracket)
 		self.detail = AAV_Gui:createButtonDetail(self.origin)
 		self.playButton = AAV_Gui:createButtonPlay(self.origin)
+		self.replayButton = AAV_Gui:createButtonReplay(self.origin)
 		self.seeker = {}
 		self.seeker.bar, self.seeker.back, self.seeker.slide, self.seeker.speedval, self.seeker.speed = AAV_Gui:createSeekerBar(self.player, elapsed)
 		self.seeker.status = AAV_Gui:createStatusText(self.origin)
@@ -760,6 +762,12 @@ function AAV_PlayStub:createPlayer(bracket, elapsed, broadcast)
 			end
 		end)
 		
+		-- REPLAY BUTTON
+		self.replayButton:SetScript("OnClick", function() 
+		SendChatMessage(".replay "..self.data.replay.." "..math.floor(self:getTickTime()+0.5) ,"SAY" ,nil ,"channel");
+		end)
+		
+		-- PAUSE
 		self.playButton:SetText("Pause")
 		self.playButton:SetScript("OnClick", function() 
 			self.isPlayOn = not self.isPlayOn
@@ -776,7 +784,7 @@ function AAV_PlayStub:createPlayer(bracket, elapsed, broadcast)
 				atroxArenaViewerData.current.interval = 0
 			end
 		end)
-		
+		-- VIEW STATS/ VIEW MATCH BUTTON
 		self.detail:SetText(L.VIEW_STATS)
 		self.detail:SetScript("OnClick", function() 
 			self.viewdetail = not self.viewdetail
@@ -805,6 +813,7 @@ function AAV_PlayStub:createPlayer(bracket, elapsed, broadcast)
 		if (not broadcast) then
 			self.seeker.bar:SetMinMaxValues(0, elapsed)
 			self.seeker.bar:SetValue(0)
+			self.playButton:SetText("Pause")
 			self:setTick(1)
 			self.seeker.status:Hide()
 			self:handleSeeker("show")
