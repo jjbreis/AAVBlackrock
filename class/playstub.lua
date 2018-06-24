@@ -30,6 +30,7 @@ function AAV_PlayStub:new()
 	self.viewdetail = true
 	self.isPlayOn = true
 	self.cclist = {} -- used for preventing multiple ccs on same icon
+	self.cdlist = {} -- used to put cds on slider
 	
 	----
 	-- these skills won't be shown.
@@ -449,7 +450,7 @@ function AAV_PlayStub:reAdjustTypes()
 	
 	self:removeAllCC()
 	self:removeAllCooldowns()
-	
+
 	for c,w in pairs(self:getDudesData()) do
 		if (w.player) then
 			for k,v in pairs(events) do
@@ -745,6 +746,7 @@ function AAV_PlayStub:createPlayer(bracket, elapsed, broadcast)
 		self.seeker.tick = AAV_Gui:createSeekerText(self.seeker.bar)
 		self.stats = AAV_Gui:createStatsFrame(self.origin)
 		
+		
 		self.stats:Hide()
 		self.viewdetail = true
 		self.isPlayOn = true
@@ -764,7 +766,9 @@ function AAV_PlayStub:createPlayer(bracket, elapsed, broadcast)
 		
 		-- REPLAY BUTTON
 		self.replayButton:SetScript("OnClick", function() 
-		SendChatMessage(".replay "..self.data.replay.." "..math.floor(self:getTickTime()+0.5) ,"SAY" ,nil ,"channel");
+		if(self.data.replay) then
+			SendChatMessage(".replay "..self.data.replay.." "..math.floor(self:getTickTime()+0.5) ,"SAY" ,nil ,"channel");
+		end
 		end)
 		
 		-- PAUSE
@@ -810,6 +814,8 @@ function AAV_PlayStub:createPlayer(bracket, elapsed, broadcast)
 			self.seeker.status:Show()
 			self:handleSeeker("hide")
 		end
+		
+		
 	else
 		-- reset values
 		if (not broadcast) then
@@ -819,6 +825,9 @@ function AAV_PlayStub:createPlayer(bracket, elapsed, broadcast)
 			self:setTick(1)
 			self.seeker.status:Hide()
 			self:handleSeeker("show")
+			for k,v in pairs(self.sliderCD) do
+				self.sliderCD[k]:Hide()
+			end
 		else
 			self.seeker.status:Show()
 			self:handleSeeker("hide")
@@ -845,14 +854,25 @@ function AAV_PlayStub:createPlayer(bracket, elapsed, broadcast)
 		
 		
 		self:createStats(self:getMatch()["teams"], self:getMatch()["combatans"]["dudes"], bracket)
-		
-		
+		self.sliderCD = {}
+		--SLIDER CD
+		for k,v in pairs(self.cdlist) do
+			if (v) then
+				for d,x in pairs(v) do
+				--	print("CD: "..d.." Timestamp: "..k.." ID: "..x)
+					if(bracket <= x) then
+						self.sliderCD[k] = AAV_Gui:createSliderCD(self.seeker.bar, k, d, 0, elapsed)
+					else
+						self.sliderCD[k] = AAV_Gui:createSliderCD(self.seeker.bar, k, d, 1, elapsed)
+					end
+				end
+			end
+		end
 		
 	else
 		self.detail:Hide()
 		
 	end
-	
 end
 
 function AAV_PlayStub:createStats(teamdata, matchdata, bracket)
@@ -981,6 +1001,7 @@ function AAV_PlayStub:createIndex()
 	local s, ss
 	local events = {1, 2, 13}
 	self.index = {} -- resets previous indexi
+	self.cdlist = {} --reset previous cclist
 	
 	for ik,iv in pairs(events) do
 		for ic, iw in pairs(self:getDudesData()) do
@@ -1053,8 +1074,14 @@ function AAV_PlayStub:createIndex()
 				if (not cd[id]) then cd[id] = {} end
 				if (tonumber(s[6]) and AAV_CCSKILS[tonumber(s[5])]) then
 					cd[id][tonumber(s[5])] = AAV_CCSKILS[tonumber(s[5])]
-				end
-				
+					
+					--For slider CDS				
+					if (AAV_CDSKIlLS[tonumber(s[5])] and tonumber(s[5])) then
+						local dataOnTick = AAV_Util:split(self.data.data[k], ',')
+						self.cdlist[dataOnTick[1]] = {}
+						self.cdlist[dataOnTick[1]][s[5]] = id
+					end
+				end					
 			elseif (event == 13) then
 			
 				-- buff
@@ -1136,10 +1163,7 @@ function AAV_PlayStub:createIndex()
 						concatcd = concatcd .. c .. ":" .. w .. ","
 					end
 					self.index[id][k]["cd"] = concatcd
-					
-				end
-				
-				
+				end	
 			end
 				
 			for c,w in pairs(cc) do

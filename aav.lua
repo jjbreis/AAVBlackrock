@@ -46,7 +46,7 @@ AAV_MINIMUM_COOLDOWN = 5
 AAV_AURA_LONGLASTING = 180
 AAV_MAX_AURASVISIBLE = 11
 
-AAV_GUI_VERTICALFRAMEDISTANCE = 110
+AAV_GUI_VERTICALFRAMEDISTANCE = 140
 AAV_GUI_MAXCOMBATTEXTOBJECTS = 25
 AAV_GUI_MAXUSEDSKILLSOBJECTS = 12
 AAV_GUI_HEALTHBARHEIGHT = 16
@@ -574,13 +574,11 @@ function atroxArenaViewer:UPDATE_BATTLEFIELD_STATUS(event, status)
 			self:SendCommMessage(AAV_COMM_LOOKUPBROADCAST, self:Serialize(message["std"]), self:getCommMethod(), nil)
 			message["std"].state = nil
 			
-		elseif (status == 1 and atroxArenaViewerData.current.inArena) then
+		elseif (status == 1 and atroxArenaViewerData.current.inArena) then		
 			local found
 			for i=0,1 do
 				found = false
 				local teamName, oldRating, newRating, teamSkill = GetBattlefieldTeamInfo(i)
---newrating and oldrating is broken on AT feelsbadman
---				print("Oldrating: "..oldRating.." newrating: "..newRating)
 				if (teamName ~= "") then
 					for j=1,3 do
 						local name,_,ratiing = GetArenaTeam(j)

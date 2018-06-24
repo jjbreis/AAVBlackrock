@@ -288,6 +288,58 @@ AAV_CCSKILS = {
 	[42292]	= 120,	-- PvP Trinket
 }
 ----
+--
+AAV_CDSKIlLS = {
+
+	-- WARRIOR
+	[871]	= 300,	-- Shield Wall
+	[46924]	= 75,	-- Bladestorm
+
+	-- Priest
+	[33206]	= 144,	-- Pain Suppression
+	
+	-- DRUID
+	[61336]	= 180,	-- Survival Instincts
+	[50334]	= 180,	-- Berserk
+	[22812]	= 60,	-- Barkskin
+	[17116]	= 180,	-- Nature's Swiftness
+
+	-- WARLOCK
+	[18708]	= 180,	-- Fel Domination
+	[59672]	= 180,	-- Metamorphosis
+
+	-- MAGE
+	[12051]	= 240,	-- Evocation
+	[45438]	= 240,	-- Ice Block
+	[12472]	= 144,	-- Icy Veins
+	
+	-- PALADIN
+	[642] 	= 300, 	-- Divine Shield
+	[10278] = 300, 	-- Hand of Protection
+	[31884] = 180, 	-- Avenging Wrath
+	
+	-- HUNTER
+	[3045]	= 300,	-- Rapid Fire
+	[19263]	= 80,	-- Deterrence
+
+	-- DEATHKNIGHT
+	[47476]	= 100,	-- Strangulate
+	[49206]	= 180,	-- Summon Gargoyle
+	
+	-- ROGUE
+	[2094]	= 120,	-- Blind
+	[51713] = 60,	-- Shadow Dance
+	
+	-- SHAMAN
+	[16166] = 150,	-- Elemental Mastery
+	[16188] = 120,	-- Nature's Swiftness
+	[2825] 	= 600,	-- Bloodlust
+	
+	-- GENERAL
+	[59752]	= 120,	-- Every Man for Himself
+	[42292]	= 120,	-- PvP Trinket
+}
+---
 -- skills that are only visible as buffs, but should create a skill used.
 AAV_BUFFSTOSKILLS = {
 	[57993] = true,	-- Envenom

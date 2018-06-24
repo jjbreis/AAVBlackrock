@@ -134,7 +134,7 @@ function AAV_TableGui:createMatchesTable()
 		}, -- [3]
 		{
 			["name"] = " ",
-			["width"] = 63,
+			["width"] = 85,
 			["align"] = "RIGHT",
 		}, -- [4]
 		{
@@ -144,7 +144,7 @@ function AAV_TableGui:createMatchesTable()
 		}, -- [5]
 		{
 			["name"] = " ",
-			["width"] = 65,
+			["width"] = 85,
 			["align"] = "LEFT",
 		}, -- [6]
 		{

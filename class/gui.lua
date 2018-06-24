@@ -276,7 +276,7 @@ function AAV_Gui:createSeekerBar(parent, elapsed)
 	f.texture = t
 	
 	--c:SetAllPoints(parent)
-	f:SetPoint("BOTTOMLEFT", parent:GetName(), 55, 50)
+	f:SetPoint("BOTTOMLEFT", parent:GetName(), 55, 75)
 	f:Show()
 	
 	
@@ -289,9 +289,11 @@ function AAV_Gui:createSeekerBar(parent, elapsed)
 	a:SetStatusBarColor(1, 1, 1)
 	a:SetMinMaxValues(0, elapsed)
 	a:SetValue(0)
-	a:SetPoint("BOTTOMLEFT", parent, 55, 50)
+	a:SetPoint("BOTTOMLEFT", parent, 55, 75)
 	--a:SetPoint("TOPLEFT", speedframe, 0, 0)
 	a:Show()
+	
+  
 	
 	local left = CreateFrame("FRAME", nil, a)
 	left:SetHeight(12)
@@ -414,7 +416,7 @@ end
 function AAV_Gui:createButtonPlay(parent)
 	
 	local pause = CreateFrame("BUTTON", "$parentPlayButton", parent, "UIPanelButtonTemplate")
-	pause:SetPoint("BOTTOMLEFT", parent, 10, 45)
+	pause:SetPoint("BOTTOMLEFT", parent, 10, 70)
 	pause:SetWidth(38)
 	pause:SetHeight(25)
 	pause:Show()
@@ -1355,4 +1357,51 @@ function AAV_Gui:createCC(parent, id)
 	
 	return f, n
 	
+end
+function AAV_Gui:createSliderCD(parent, timestamp, spellID, TeamID, elapsed)
+	local percent = 1
+	local name, rank, icon = GetSpellInfo(spellID)
+	
+	if(elapsed > 0) then
+		 percent= timestamp/elapsed
+	end
+	
+  -- ARROWFRAME
+	local arrowframe = CreateFrame("Frame", "$parentarrow"..spellID, parent)
+	arrowframe:SetWidth(8)
+	arrowframe:SetHeight(8)
+	arrowframe:SetFrameStrata("HIGH")
+	
+	local actualpoint= math.floor(percent*parent:GetWidth())
+	
+	-- ARROWTEXTURE
+	local arrowtex = arrowframe:CreateTexture(nil)
+	arrowtex:SetTexture("Interface\\Addons\\aav\\res\\arrowDOT.tga")
+	arrowtex:SetAllPoints(arrowframe)
+	arrowframe.texture = arrowtex
+	arrowframe:Show()
+	
+	--ICON FRAME
+	local iconframe = CreateFrame("Frame", "$parentarrow"..spellID, arrowframe)
+	iconframe:SetWidth(16)
+	iconframe:SetHeight(16)
+	iconframe:SetFrameStrata("HIGH")
+	
+	--ICON TEXTURE
+	local icontex = iconframe:CreateTexture(nil)
+	icontex:SetTexture(icon)
+	icontex:SetAllPoints(iconframe)
+	iconframe.texture = icontex
+	iconframe:Show()	
+
+	if(TeamID==0) then
+		arrowframe:SetPoint("BOTTOMLEFT", parent, actualpoint, -8)
+		iconframe:SetPoint("BOTTOMLEFT", parent, actualpoint-3, -25)
+	else
+		arrowframe:SetPoint("BOTTOMLEFT", parent, actualpoint, 12)
+		iconframe:SetPoint("BOTTOMLEFT", parent, actualpoint-3, 20)
+	end
+	
+	
+	return arrowframe, arrrowtex
 end
