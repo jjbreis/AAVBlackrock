@@ -81,9 +81,6 @@ function AAV_MatchStub:newDude(unit, team, max)
 	self.combatans.dudes[UnitGUID(unit)].hdone = 0
 	self.combatans.dudes[UnitGUID(unit)].hcrit = 0
 	
-	if (atroxArenaViewerData.current.broadcast) then
-		
-	end
 	return UnitGUID(unit), self.combatans.dudes[UnitGUID(unit)]
 end
 

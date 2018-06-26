@@ -308,52 +308,10 @@ function AAV_PlayStub:setVisibility(id, type)
 	end
 end
 
-----
--- sets the health bar text. 
--- according to certain configuration, it can be shown as percentage or absolute value.
--- @param id affected bar
--- @param value max health
--- @return full text for health bar, default = ???
---[[
-function AAV_PlayStub:getHealthBarText(id, max)
-	if (not self.entities[id]) then return end
-	
-	local txt = "???"
-	local min, max = self.entities[id].bar:GetMinMaxValues()
-	local value = self.entities[id].bar:GetValue()
-	
-	-- check for percentage or aboslute values
-	if (value == 0) then
-		txt = "Dead"
-	else
-		if (atroxArenaViewerData.defaults.profile.healthdisplay == 1) then
-			local a = (value/max)*100*10
-			local i = string.find(a,"[\.]",1)
-			if (i) then a = tonumber(string.sub(a,1, string.find(a,"[\.]",1)-1)) end
-			txt = (a / 10) .. "%"
-		elseif (atroxArenaViewerData.defaults.profile.healthdisplay == 2) then
-			txt = value .. " / " .. max
-		elseif (atroxArenaViewerData.defaults.profile.healthdisplay == 3) then
-			txt = (value - max) .. " / " .. max
-		end
-	
-		
-	end
-	
-	return txt
-end
---]]
-
-----
---
--- 
 function AAV_PlayStub:getTickTime()
 	return self.tickTime
 end
 
-----
---
---
 function AAV_PlayStub:setTickTime(value)
 	self.tickTime = value
 end
@@ -734,8 +692,7 @@ end
 -- creates or take existing gui elements.
 -- @param num match id
 -- @param elapsed time
--- @param broadcast true = watches a broadcasts, false = local playing
-function AAV_PlayStub:createPlayer(bracket, elapsed, broadcast)
+function AAV_PlayStub:createPlayer(bracket, elapsed)
 	if (not self.player) then 
 		self.origin, self.player, self.maptext = AAV_Gui:createPlayerFrame(self, bracket)
 		self.detail = AAV_Gui:createButtonDetail(self.origin)
@@ -811,30 +768,18 @@ function AAV_PlayStub:createPlayer(bracket, elapsed, broadcast)
 				self.stats:Show()
 				-- stop timer
 			end
-		end)
-		
-		if (broadcast) then
-			self.seeker.status:Show()
-			self:handleSeeker("hide")
-		end
-		
-		
+		end)	
 	else
 		-- reset values
-		if (not broadcast) then
-			self.seeker.bar:SetMinMaxValues(0, elapsed)
-			self.seeker.bar:SetValue(0)
-			self.playButton:SetText("Pause")
-			self:setTick(1)
-			self.seeker.status:Hide()
-			self:handleSeeker("show")
-			self.hackInfo:Hide()
-			for k,v in pairs(self.sliderCD) do
-				self.sliderCD[k]:Hide()
-			end
-		else
-			self.seeker.status:Show()
-			self:handleSeeker("hide")
+		self.seeker.bar:SetMinMaxValues(0, elapsed)
+		self.seeker.bar:SetValue(0)
+		self.playButton:SetText("Pause")
+		self:setTick(1)
+		self.seeker.status:Hide()
+		self:handleSeeker("show")
+		self.hackInfo:Hide()
+		for k,v in pairs(self.sliderCD) do
+			self.sliderCD[k]:Hide()
 		end
 		
 		AAV_Gui:setPlayerFrameSize(self.player, bracket)
@@ -850,33 +795,26 @@ function AAV_PlayStub:createPlayer(bracket, elapsed, broadcast)
 	for k,v in pairs(self.pool.stats) do
 		v:hideAll()
 	end
+	self:newEntities(self.player)
+	self:createIndex()
+	self:setSeekerTooltip()
+	self.detail:Show()
+	if(self.isCdHacking) then self.hackInfo:Show() end
 
-	if (not broadcast) then
-		self:newEntities(self.player)
-		self:createIndex()
-		self:setSeekerTooltip()
-		self.detail:Show()
-		if(self.isCdHacking) then self.hackInfo:Show() end
-
-		self:createStats(self:getMatch()["teams"], self:getMatch()["combatans"]["dudes"], bracket, self.cdhack)
-		self.sliderCD = {}
-		--SLIDER CD
-		for k,v in pairs(self.cdlist) do
-			if (v) then
-				for d,x in pairs(v) do
-				--	print("CD: "..d.." Timestamp: "..k.." ID: "..x)
-					if(bracket <= x) then
-						self.sliderCD[k] = AAV_Gui:createSliderCD(self.seeker.bar, k, d, 0, elapsed)
-					else
-						self.sliderCD[k] = AAV_Gui:createSliderCD(self.seeker.bar, k, d, 1, elapsed)
-					end
+	self:createStats(self:getMatch()["teams"], self:getMatch()["combatans"]["dudes"], bracket, self.cdhack)
+	self.sliderCD = {}
+	--SLIDER CD
+	for k,v in pairs(self.cdlist) do
+		if (v) then
+			for d,x in pairs(v) do
+			--	print("CD: "..d.." Timestamp: "..k.." ID: "..x)
+				if(bracket <= x) then
+					self.sliderCD[k] = AAV_Gui:createSliderCD(self.seeker.bar, k, d, 0, elapsed)
+				else
+					self.sliderCD[k] = AAV_Gui:createSliderCD(self.seeker.bar, k, d, 1, elapsed)
 				end
 			end
 		end
-		
-	else
-		self.detail:Hide()
-		
 	end
 end
 
@@ -916,31 +854,7 @@ function AAV_PlayStub:handleSeeker(val)
 		self.seeker.speedval:Hide()
 	end
 end
-
-----
--- sets the status text of the broadcaster's.
--- @param status current state
-function AAV_PlayStub:setStatus(status)
-	if (status == 1) then
-		self.seeker.status:SetText(L.STATUS .. ": " .. L.STATUS_IDLE)
-	elseif (status == 2) then
-		self.seeker.status:SetText(L.STATUS .. ": " .. L.STATUS_QUEUE)
-	elseif (status == 3) then
-		self.seeker.status:SetText(L.STATUS .. ": " .. L.STATUS_ENTER)
-	elseif (status == 4) then
-		self.seeker.status:SetText(L.STATUS .. ": " .. L.STATUS_BOX_60)
-	elseif (status == 5) then
-		self.seeker.status:SetText(L.STATUS .. ": " .. L.STATUS_BOX_45)
-	elseif (status == 6) then
-		self.seeker.status:SetText(L.STATUS .. ": " .. L.STATUS_BOX_30)
-	elseif (status == 7) then
-		self.seeker.status:SetText(L.STATUS .. ": " .. L.STATUS_BOX_15)
-	elseif (status == 8) then
-		self.seeker.status:SetText(L.STATUS .. ": " .. L.STATUS_FIGHT)
-	end
-end
-
-----
+---
 -- checks if the omitted spellid is a CC and adds it to the player's frame.
 -- @param id playerid
 -- @param spellid
@@ -1039,7 +953,7 @@ function AAV_PlayStub:createIndex()
 	local id, event, i, j, lastticktime, diff = 0, 0, 0, 0, 0, 0
 	local buff, debuff, cc, cd, lastcdused = {}, {}, {}, {}, {}
 	for a, b in pairs  (AAV_CHEATSKILS) do
-		lastcdused[a] = 0
+		lastcdused[a] = {}
 	end
 	--local resetcc = function(c) for k,v in pairs(c) do c.k = nil end end
 	--print(#self.data.data)
@@ -1087,14 +1001,15 @@ function AAV_PlayStub:createIndex()
 					local dataOnTick = AAV_Util:split(self.data.data[k], ',')
 					
 					--For anticheat
-					if (tonumber(s[5]) and  AAV_CHEATSKILS[tonumber(s[5])]) then 
-						diff = dataOnTick[1] - lastcdused[tonumber(s[5])]
-						if (diff < AAV_CCSKILS[tonumber(s[5])] and lastcdused[tonumber(s[5])] ~= 0) then
+					if (tonumber(s[6]) and  AAV_CHEATSKILS[tonumber(s[5])] ) then 
+						if (not lastcdused[tonumber(s[5])][id]) then lastcdused[tonumber(s[5])][id] = 0 end
+						diff = dataOnTick[1] - lastcdused[tonumber(s[5])][id]
+						if (diff < AAV_CCSKILS[tonumber(s[5])] and lastcdused[tonumber(s[5])][id] ~= 0) then
 							self.isCdHacking = true
 							self.cdhack[id] = {}
 							self.cdhack[id][dataOnTick[1]] = diff..";"..tonumber(s[5])
 						end
-					lastcdused[tonumber(s[5])] = dataOnTick[1]
+					lastcdused[tonumber(s[5])][id] = dataOnTick[1]
 					end
 					
 					--For slider CDS				

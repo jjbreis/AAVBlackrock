@@ -66,7 +66,7 @@ function AAV_TeamStats:setValue(parent, teamdata, matchdata, team, bracket, cdha
 					
 					for m,p in pairs (cdhack[w.ID]) do
 						tmp = AAV_Util:split(p, ';')
-						example = w.name.." used "..GetSpellInfo(tmp[2]).." at "..m.." with a CD of "..tmp[1]
+						example = w.name.." used "..GetSpellInfo(tmp[2]).." at "..m.." seconds with a CD of "..tmp[1]
 					end
 					self.entries[i]["cheaticon"]:Show()
 					self.entries[i]["cheaticon"].texture:SetTexture("Interface\\Addons\\aav\\res\\" .. w.class .. ".tga")

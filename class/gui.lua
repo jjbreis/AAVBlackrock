@@ -68,8 +68,6 @@ function AAV_Gui:createPlayerFrame(obj, bracket)
 	btn:SetScript("OnClick", function (s, b, d)
 		obj:hidePlayer(s:GetParent())
 		obj:hideMovingObjects()
-		atroxArenaViewer:stopListening()
-		atroxArenaViewerData.current.listening = ""
 		obj:setOnUpdate("stop")
 	end)
 	btn:Show()
@@ -847,17 +845,6 @@ function AAV_Gui:createMinimapIcon(parent, player)
 			
 			UIDropDownMenu_AddButton(info, level)
 			
-			-- ENABLE BROADCASTING
-			reset(info)
-			info.text       = "Enable broadcasting"
-			info.notCheckable = false
-			info.notClickable = false
-			info.hasArrow	= false
-			info.checked	= atroxArenaViewerData.current.broadcast
-			info.func       = function() parent:changeBroadcast() end
-			UIDropDownMenu_AddButton(info, level)
-			info.checked	= nil
-			
 			-- PLAY MATCH
 			--[[info.text       = "Play match"
 			info.notCheckable = true
@@ -867,16 +854,6 @@ function AAV_Gui:createMinimapIcon(parent, player)
 			
 			UIDropDownMenu_AddButton(info, level)]]--
 
-			
-			-- CONNECT
-			reset(info)
-			info.text       = "Connect"
-			info.notCheckable = true
-			info.notClickable = false
-			info.hasArrow	= true
-			info.func		= nil
-			UIDropDownMenu_AddButton(info, level)
-			
 			
 			-- OPTIONS
 			reset(info)
@@ -976,244 +953,119 @@ function AAV_Gui:createMinimapIcon(parent, player)
 							atroxArenaViewer:deleteMatch(#atroxArenaViewerData.data)					
 						end
 						AAV_TableGui:refreshMatchesFrame()
-				end
-				UIDropDownMenu_AddButton(info, level)
+					end
+					UIDropDownMenu_AddButton(info, level)
+				
+				elseif (UIDROPDOWNMENU_MENU_VALUE == "Options") then
+					reset(info)
+					info.text = "Buffs and Debuffs"
+					info.notCheckable = true
+					info.notClickable = true
+					info.hasArrow = false
+					info.func = nil
+					info.r = 0.8901960784313725
+					info.g = 0.5725490196078431
+					info.b = 0.7725490196078431
+					
+					UIDropDownMenu_AddButton(info, level)
+					
+					reset(info)
+					info.text = "Don't Exceed Buffs and Debuffs"
+					info.notCheckable = false
+					info.notClickable = false
+					info.hasArrow = false
+					info.checked = atroxArenaViewerData.defaults.profile.shortauras
+					info.func = function() atroxArenaViewerData.defaults.profile.shortauras = not atroxArenaViewerData.defaults.profile.shortauras end
+					
+					UIDropDownMenu_AddButton(info, level)
+					
+					reset(info)
+					info.notCheckable = true
+					info.notClickable = true
+					info.text = ""
+					
+					UIDropDownMenu_AddButton(info, level)
+					
+					reset(info)
+					info.text = "Health Bar Color"
+					info.notCheckable = true
+					info.notClickable = true
+					info.hasArrow = false
+					info.func = nil
+					info.r = 0.8901960784313725
+					info.g = 0.5725490196078431
+					info.b = 0.7725490196078431
+					
+					UIDropDownMenu_AddButton(info, level)
+					
+					reset(info)
+					info.text = "Use Unique Color"
+					info.notCheckable = false
+					info.notClickable = false
+					info.hasArrow = false
+					info.checked = atroxArenaViewerData.defaults.profile.uniquecolor
+					info.func = function() atroxArenaViewerData.defaults.profile.uniquecolor = not atroxArenaViewerData.defaults.profile.uniquecolor end
+					
+					UIDropDownMenu_AddButton(info, level)
+					
+					reset(info)
+					info.notCheckable = true
+					info.notClickable = true
+					info.text = ""
+					
+					UIDropDownMenu_AddButton(info, level)
+					
+					reset(info)
+					info.text = "Health Bar Text"
+					info.notCheckable = true
+					info.notClickable = true
+					info.hasArrow = false
+					info.func = nil
+					info.r = 0.8901960784313725
+					info.g = 0.5725490196078431
+					info.b = 0.7725490196078431
+					
+					UIDropDownMenu_AddButton(info, level)
+					
+					reset(info)
+					info.text = "Percentage Health Value (100%)"
+					info.notCheckable = false
+					info.notClickable = false
+					info.hasArrow = false
+					info.checked = atroxArenaViewerData.defaults.profile.healthdisplay == 1
+					info.func = function() 
+						atroxArenaViewerData.defaults.profile.healthdisplay = 1 
+						if (atroxArenaViewer:getPlayer()) then atroxArenaViewer:getPlayer():updateHealthtext() end 
+					end
+					
+					UIDropDownMenu_AddButton(info, level)
+					
+					reset(info)
+					info.text = "Absolute Health Value (20000)"
+					info.notCheckable = false
+					info.notClickable = false
+					info.hasArrow = false
+					info.checked = atroxArenaViewerData.defaults.profile.healthdisplay == 2
+					info.func = function() 
+						atroxArenaViewerData.defaults.profile.healthdisplay = 2 
+						if (atroxArenaViewer:getPlayer()) then atroxArenaViewer:getPlayer():updateHealthtext() end 
+					end
+					
+					UIDropDownMenu_AddButton(info, level)
+					
+					reset(info)
+					info.text = "Deficit Health Value (-530/20000)"
+					info.notCheckable = false
+					info.notClickable = false
+					info.hasArrow = false
+					info.checked = atroxArenaViewerData.defaults.profile.healthdisplay == 3
+					info.func = function() 
+						atroxArenaViewerData.defaults.profile.healthdisplay = 3 
+						if (atroxArenaViewer:getPlayer()) then atroxArenaViewer:getPlayer():updateHealthtext() end 
+					end
+					
+					UIDropDownMenu_AddButton(info, level)
 
-				
-				--[[
-				if (atroxArenaViewerData.data) then
-					for k,v in pairs(atroxArenaViewerData.data) do
-						reset(info)
-						info.text = k .. " - " .. v.map .. " (" .. v.startTime .. ")"
-						info.notCheckable = true
-						info.notClickable = false
-						info.hasArrow = false
-						info.func = function() parent:deleteMatch(k) end
-						
-						UIDropDownMenu_AddButton(info, level)
-					end
-					
-					reset(info)
-					info.text = "delete all"
-					info.notCheckable = true
-					info.notClickable = false
-					info.hasArrow = false
-					info.func = function() for i=1,#atroxArenaViewerData.data do parent:deleteMatch(1) end end
-					
-					UIDropDownMenu_AddButton(info, level)
-					
-				else
-					reset(info)
-					info.text = "none found"
-					info.notCheckable = true
-					info.notClickable = true
-					info.hasArrow = false
-					info.func = nil
-					
-					UIDropDownMenu_AddButton(info, level)
-				end
-				--]]
-			elseif (UIDROPDOWNMENU_MENU_VALUE == "Connect") then
-				-- CONNECT
-				local tmp = 0
-				for k,v in pairs(parent:getBroadcasters()) do tmp = 1 break end
-				if (tmp > 0) then
-					for k,v in pairs(parent:getBroadcasters()) do
-						reset(info)
-						info.text = k .. " (v" .. v.version ..")"
-						info.notCheckable = true
-						info.notClickable = false
-						info.hasArrow = false
-						info.func = function() parent:connectToBroadcast(k) end
-						
-						UIDropDownMenu_AddButton(info, level)
-						
-					end
-				else
-					reset(info)
-					info.text = "none found"
-					info.notCheckable = true
-					info.notClickable = true
-					info.disabled = true
-					info.hasArrow = false
-					info.func = nil
-					info.notClickable = true
-					
-					UIDropDownMenu_AddButton(info, level)
-					info.notClickable = false
-					
-				end
-				
-			elseif (UIDROPDOWNMENU_MENU_VALUE == "Options") then
-				reset(info)
-				info.text = "Broadcast announcements"
-				info.notCheckable = false
-				info.notClickable = false
-				info.hasArrow = false
-				info.checked = atroxArenaViewerData.defaults.profile.broadcastannounce
-				info.func = function() atroxArenaViewerData.defaults.profile.broadcastannounce = not atroxArenaViewerData.defaults.profile.broadcastannounce end
-				
-				UIDropDownMenu_AddButton(info, level)
-				
-				reset(info)
-				info.notCheckable = true
-				info.notClickable = true
-				info.text = ""
-				
-				UIDropDownMenu_AddButton(info, level)
-				
-				reset(info)
-				info.text = "Buffs and Debuffs"
-				info.notCheckable = true
-				info.notClickable = true
-				info.hasArrow = false
-				info.func = nil
-				info.r = 0.8901960784313725
-				info.g = 0.5725490196078431
-				info.b = 0.7725490196078431
-				
-				UIDropDownMenu_AddButton(info, level)
-				
-				reset(info)
-				info.text = "Don't Exceed Buffs and Debuffs"
-				info.notCheckable = false
-				info.notClickable = false
-				info.hasArrow = false
-				info.checked = atroxArenaViewerData.defaults.profile.shortauras
-				info.func = function() atroxArenaViewerData.defaults.profile.shortauras = not atroxArenaViewerData.defaults.profile.shortauras end
-				
-				UIDropDownMenu_AddButton(info, level)
-				
-				reset(info)
-				info.notCheckable = true
-				info.notClickable = true
-				info.text = ""
-				
-				UIDropDownMenu_AddButton(info, level)
-				
-				reset(info)
-				info.text = "Health Bar Color"
-				info.notCheckable = true
-				info.notClickable = true
-				info.hasArrow = false
-				info.func = nil
-				info.r = 0.8901960784313725
-				info.g = 0.5725490196078431
-				info.b = 0.7725490196078431
-				
-				UIDropDownMenu_AddButton(info, level)
-				
-				reset(info)
-				info.text = "Use Unique Color"
-				info.notCheckable = false
-				info.notClickable = false
-				info.hasArrow = false
-				info.checked = atroxArenaViewerData.defaults.profile.uniquecolor
-				info.func = function() atroxArenaViewerData.defaults.profile.uniquecolor = not atroxArenaViewerData.defaults.profile.uniquecolor end
-				
-				UIDropDownMenu_AddButton(info, level)
-				
-				reset(info)
-				info.notCheckable = true
-				info.notClickable = true
-				info.text = ""
-				
-				UIDropDownMenu_AddButton(info, level)
-				
-				reset(info)
-				info.text = "Health Bar Text"
-				info.notCheckable = true
-				info.notClickable = true
-				info.hasArrow = false
-				info.func = nil
-				info.r = 0.8901960784313725
-				info.g = 0.5725490196078431
-				info.b = 0.7725490196078431
-				
-				UIDropDownMenu_AddButton(info, level)
-				
-				reset(info)
-				info.text = "Percentage Health Value (100%)"
-				info.notCheckable = false
-				info.notClickable = false
-				info.hasArrow = false
-				info.checked = atroxArenaViewerData.defaults.profile.healthdisplay == 1
-				info.func = function() 
-					atroxArenaViewerData.defaults.profile.healthdisplay = 1 
-					if (atroxArenaViewer:getPlayer()) then atroxArenaViewer:getPlayer():updateHealthtext() end 
-				end
-				
-				UIDropDownMenu_AddButton(info, level)
-				
-				reset(info)
-				info.text = "Absolute Health Value (20000)"
-				info.notCheckable = false
-				info.notClickable = false
-				info.hasArrow = false
-				info.checked = atroxArenaViewerData.defaults.profile.healthdisplay == 2
-				info.func = function() 
-					atroxArenaViewerData.defaults.profile.healthdisplay = 2 
-					if (atroxArenaViewer:getPlayer()) then atroxArenaViewer:getPlayer():updateHealthtext() end 
-				end
-				
-				UIDropDownMenu_AddButton(info, level)
-				
-				reset(info)
-				info.text = "Deficit Health Value (-530/20000)"
-				info.notCheckable = false
-				info.notClickable = false
-				info.hasArrow = false
-				info.checked = atroxArenaViewerData.defaults.profile.healthdisplay == 3
-				info.func = function() 
-					atroxArenaViewerData.defaults.profile.healthdisplay = 3 
-					if (atroxArenaViewer:getPlayer()) then atroxArenaViewer:getPlayer():updateHealthtext() end 
-				end
-				
-				UIDropDownMenu_AddButton(info, level)
-				
-				reset(info)
-				info.notCheckable = true
-				info.notClickable = true
-				info.text = ""
-				
-				UIDropDownMenu_AddButton(info, level)
-				
-				reset(info)
-				info.text = "Communication Method"
-				info.notCheckable = true
-				info.notClickable = true
-				info.hasArrow = false
-				info.func = nil
-				info.r = 0.8901960784313725
-				info.g = 0.5725490196078431
-				info.b = 0.7725490196078431
-				
-				UIDropDownMenu_AddButton(info, level)
-				
-				reset(info)
-				info.text = "Guild"
-				info.notCheckable = false
-				info.notClickable = false
-				info.hasArrow = false
-				info.checked = atroxArenaViewerData.current.communication == "GUILD"
-				info.func = function()
-					atroxArenaViewerData.current.communication = "GUILD"
-				end
-				
-				UIDropDownMenu_AddButton(info, level)
-				
-				reset(info)
-				info.text = "Raid"
-				info.notCheckable = false
-				info.notClickable = false
-				info.hasArrow = false
-				info.checked = atroxArenaViewerData.current.communication == "RAID"
-				info.func = function() 
-					atroxArenaViewerData.current.communication = "RAID"
-				end
-				
-				UIDropDownMenu_AddButton(info, level)
-				
 			elseif (UIDROPDOWNMENU_MENU_VALUE == "Export match") then
 				-- PLAY MATCH
 				

@@ -9,10 +9,6 @@ local timer -- playback timer
 local queuetimer -- queue timer
 local newversion = 0 -- prevent version check spam
 local queue = {} -- messages at issue
-local broadcasters = {} -- all broadcasters
-local spectators = {} -- all spectators
-local versions = {} -- all aav users
-local initbroadcast = false -- whether a lookup has been sent
 local currentstate = 1
 local exportnum = 0
 local currentbracket = nil
@@ -21,15 +17,6 @@ local tempdebuffs = {} -- used for determining new debuffs
 local exceptauras = { -- these auras won't be tracked
 	32727,	-- Arena Preparation
 }
-----
--- reused for packet sending
-local message = {
-	["std"] = {}, -- used for standard sending
-	["dude"] = {}, -- used for single dude data
-	["dudes"] = {}, -- used for multiple dude data
-	["stats"] = {}, -- used for end match stats
-}
-
 
 -------------------------
 -- GLOBALS
@@ -90,22 +77,7 @@ AAV_CC_MAXLISTING = 5
 AAV_DETAIL_ENTRYHEIGHT = 20
 AAV_DETAIL_ENTRYWIDTH = 560
 
-AAV_COMM_LOOKUPBROADCAST = "AAVLookupBroadcast"
 AAV_COMM_HANDLEMATCHDATA = "AAVHandleData"
-
-AAV_COMM_EVENT = {
-	["cmd_versioncheck"]		= 1,
-	["cmd_broadcaststart"]		= 2,
-	["cmd_broadcaststop"]		= 3,
-	["cmd_status"]				= 4,
-	["cmd_connect"]				= 5,
-	["cmd_accept"]				= 6,
-	["cmd_matchend"]			= 7,
-	["cmd_newmatch"]			= 8,
-	["cmd_updateplayer"]		= 9,
-	["cmd_updateallplayers"]	= 10,
-	["cmd_spectatorstop"]		= 11,
-}
 
 AAV_COMM_MAPS = {
 	[1] = L.ARENA_NAGRAND,
@@ -141,7 +113,6 @@ function atroxArenaViewer:OnInitialize()
 				minimapy = 58.8,
 				hpbartexture = "oCB",
 				manabartexture = "oCB",
-				broadcastannounce = true, --broadcast announce
 				healthdisplay = 3, -- deficit percentage
 				shortauras = true, -- don't exceed debuff buff bar
 				uniquecolor = false, -- use class color as hp bar
@@ -155,12 +126,9 @@ function atroxArenaViewer:OnInitialize()
 		entered = 0,
 		time = 0,
 		move = 0,
-		broadcast = false,
 		record = true,
-		listening = "",
 		interval = 0.1,
 		update = 0.1,
-		communication = "GUILD",
 	}
     
     local minimap = AAV_Gui:createMinimapIcon(self)
@@ -172,348 +140,6 @@ function atroxArenaViewer:OnInitialize()
 	self:RegisterEvent("CHAT_MSG_ADDON")
 	self:RegisterEvent("CHAT_MSG_SYSTEM")
     
-end
-
-
-function atroxArenaViewer:OnEnable()
-
-    self:RegisterComm(AAV_COMM_LOOKUPBROADCAST , "commLookupBroadcast")
-    self:RegisterComm(AAV_COMM_HANDLEMATCHDATA , "commHandleMatchData")
-    
-    local msg = {
-		event = AAV_COMM_EVENT["cmd_versioncheck"],
-		major = AAV_VERSIONMAJOR,
-		minor = AAV_VERSIONMINOR,
-		bugfix = AAV_VERSIONBUGFIX,
-    }
-    
-    self:SendCommMessage(AAV_COMM_LOOKUPBROADCAST, self:Serialize(msg), self:getCommMethod(), nil)
-
-end
-
-function atroxArenaViewer:getBroadcasters()
-	return broadcasters
-end
-
-----
--- searches for running broadcasts over the guild distribution.
-function atroxArenaViewer:lookup()
-	for k,v in pairs(broadcasters) do
-		self:giveBroadcasterFound(k, v.version)
-	end
-
-end
-
-----
--- returns the method which the communication is chosen to.
--- @return "GUILD" or "RAID"
-function atroxArenaViewer:getCommMethod()
-	return atroxArenaViewerData.current.communication
-end
-
-----
--- used for broadcasts. if message contains the player's name, then stream will be listed.
--- @param prefix addon prefix
--- @param msg delivered msg
--- @param dist channel
--- @param sender player
-function atroxArenaViewer:commLookupBroadcast(prefix, msg, dist, sender)
-	local b, sd = self:Deserialize(msg)
-	if (b and sd.event == AAV_COMM_EVENT["cmd_versioncheck"]) then
-	-- VERSION CHECK
-		
-		local version = nil
-		versions[sender] = sd
-		
-		if (sd.major > AAV_VERSIONMAJOR) then 
-			version = sd.major .. "." .. sd.minor .. "." .. sd.bugfix
-		else
-			if (sd.minor > AAV_VERSIONMINOR and sd.major >= AAV_VERSIONMAJOR) then
-				version = AAV_VERSIONMAJOR .. "." .. sd.minor .. "." .. sd.bugfix
-			else
-				if (sd.bugfix > AAV_VERSIONBUGFIX and sd.major >= AAV_VERSIONMAJOR and sd.minor >= AAV_VERSIONMINOR) then
-					version = AAV_VERSIONMAJOR .. "." .. AAV_VERSIONMINOR .. "." .. sd.bugfix
-				end
-			end
-		end
-		if (version and version ~= newversion) then
-			newversion = version
-			print("|cffe392c5<AAV>|r " .. L.AAV_VERSION_OUTDATED)
-		end
-		if (atroxArenaViewerData.current.broadcast) then
-			message["std"] = {
-				event = AAV_COMM_EVENT["cmd_broadcaststart"],
-				target = nil,
-				version = AAV_VERSIONMAJOR.."."..AAV_VERSIONMINOR.."."..AAV_VERSIONBUGFIX,
-			}
-			self:SendCommMessage(AAV_COMM_LOOKUPBROADCAST, self:Serialize(message["std"]), self:getCommMethod(), nil)
-		end
-	elseif (b and sd.event == AAV_COMM_EVENT["cmd_broadcaststart"]) then
-	-- BROADCAST START
-	
-		if (not broadcasters[sender]) then
-			broadcasters[sender] = sd
-			if (atroxArenaViewerData.defaults.profile.broadcastannounce) then
-				print("|cffe392c5<AAV>|r Broadcasting started: " .. sender)
-			end
-		end
-	elseif (b and sd.event == AAV_COMM_EVENT["cmd_broadcaststop"]) then
-	-- BROADCAST STOP
-	
-		broadcasters[sender] = nil
-		if (atroxArenaViewerData.current.listening == sender) then
-			print("|cffe392c5<AAV>|r " .. sender .. " stopped broadcasting")
-		end
-		
-	elseif (b and sd.event == AAV_COMM_EVENT["cmd_status"] and atroxArenaViewerData.current.listening == sender) then
-	-- STATUS
-	
-		if (T and sd.state) then
-			T:setStatus(sd.state)
-		end
-		if (sd.map and sd.map ~= 0) then
-			T:setMapText(sender .. ": " .. AAV_COMM_MAPS[sd.map])
-		end
-		
-	elseif (b and sd.event == AAV_COMM_EVENT["cmd_connect"] and string.lower(sd.target) == string.lower(UnitName("player")) and atroxArenaViewerData.current.broadcast) then
-	-- CONNECT
-		
-		table.insert(spectators, sender)
-		print("|cffe392c5<AAV>|r New spectator connected: " .. sender .. " (total: " .. #atroxArenaViewer:getSpectators() .. ")")
-		
-		message["std"] = {
-			event = AAV_COMM_EVENT["cmd_accept"],
-			target = sender,
-			version = nil,
-			state = currentstate,
-		}
-		self:SendCommMessage(AAV_COMM_LOOKUPBROADCAST, self:Serialize(message["std"]), self:getCommMethod(), nil)
-		message["std"].state = nil
-		
-		-- if match is running, send match data
-		if (M and atroxArenaViewerData.current.inFight) then
-			self:sendAllPlayerInfo(sender)
-		end
-		
-	elseif (b and sd.event == AAV_COMM_EVENT["cmd_connect"] and atroxArenaViewerData.current.broadcast) then
-	-- REMOVE SPECTATOR
-		
-		for k,v in pairs(spectators) do
-			if (string.lower(v) == string.lower(sender)) then
-				spectators[k] = nil
-			end
-		end
-	
-	elseif (b and sd.event == AAV_COMM_EVENT["cmd_accept"] and sd.target == UnitName("player")) then
-	-- ACCEPT
-		
-		atroxArenaViewerData.current.listening = sender
-		
-		if (not T) then T = AAV_PlayStub:new() end
-		
-		T:resetData()
-		T:hidePlayer(T.player)
-		T:removeAllCooldowns()
-		T:createPlayer(1, 1, true)
-		T:setMapText(sender .. ": " .. L.CONNECT_WAITING_DATA)
-		T:handleSeeker("hide")
-		
-		T:setStatus(sd.state)
-		
-		print("|cffe392c5<AAV>|r " .. L.CONNECT_CONNECTED_TO .. sender .. ". " .. L.CONNECT_WAITING_DATA)
-		
-	elseif (b and sd.event == AAV_COMM_EVENT["cmd_matchend"] and atroxArenaViewerData.current.listening == sender) then
-	-- MATCH END
-		
-		if (not T) then return end
-		T.player:Hide()
-		T:createStats(sd.match, sd.dudes, sd.bracket)
-		T.stats:Show()
-		
-	elseif (b and sd.event == AAV_COMM_EVENT["cmd_newmatch"] and atroxArenaViewerData.current.listening == sender) then
-	-- NEW MATCH
-		
-		if (not T) then print("error") return end -- should never happen cough
-		
-		T:hidePlayer(T.player)
-		T:resetDudeData()
-		T:removeAllCC()
-		T:removeAllCooldowns()
-		T:createPlayer(sd.bracket, 1, true)
-		--T:setMapText(sender .. ": " .. AAV_COMM_MAP[sd.map])
-		T:handleSeeker("hide")
-		T:setOnUpdate("start")
-	
-	elseif (b and sd.event == AAV_COMM_EVENT["cmd_updateplayer"] and atroxArenaViewerData.current.listening == sender) then
-	-- UPDATE PLAYER
-		AAV_Gui:setPlayerFrameSize(T.player, sd.bracket)
-		T:addDudeData(sd.guid, sd.dude)
-		
-		T:newEntities(T.player) -- redraw
-		
-	elseif (b and sd.event == AAV_COMM_EVENT["cmd_updateallplayers"] and atroxArenaViewerData.current.listening == sender and sd.target == UnitName("player")) then
-	-- UPDATE ALL PLAYERS
-	
-		if (not T) then print("error") return end -- should never happen cough
-		
-		AAV_Gui:setPlayerFrameSize(T.player, sd.bracket)
-		
-		T:hidePlayer(T.player)
-		T:resetDudeData()
-		T:createPlayer(sd.bracket, 1, true)
-		T:setMapText(sender .. ": " .. AAV_COMM_MAPS[sd.map])
-		T:handleSeeker("hide")
-		
-		for k,v in pairs(sd.dudes) do
-			T:addDudeData(k, v)
-		end
-		
-		T:setOnUpdate("start")
-		
-		T:newEntities(T.player) -- redraw
-		
-	elseif (b and sd.event == AAV_COMM_EVENT["cmd_spectatorstop"] and atroxArenaViewerData.current.broadcast) then
-	-- SPECTATOR CLOSES
-		
-		for k,v in pairs(spectators) do
-			if (sender == v) then
-				spectators[k] = nil
-			end	
-		end
-	end
-end
-
-----
--- players stops listening to a broadcaster and sends a stop message.
-function atroxArenaViewer:stopListening()
-	
-	message["std"] = {
-		event = AAV_COMM_EVENT["cmd_spectatorstop"],
-		target = atroxArenaViewerData.current.listening,
-		version = AAV_VERSIONMAJOR.."."..AAV_VERSIONMINOR.."."..AAV_VERSIONBUGFIX,
-	}
-	
-	self:SendCommMessage(AAV_COMM_LOOKUPBROADCAST, self:Serialize(message["std"]), self:getCommMethod(), nil)
-	
-	atroxArenaViewerData.current.listening = ""
-end
-
-----
--- prints locally broadcaster with version.
--- @param sender broadcaster
--- @param version
-function atroxArenaViewer:giveBroadcasterFound(sender, version)
-	print("|cffe392c5<AAV>|r Broadcaster found: " .. sender .. " (v" .. version .. ")")
-end
-
-----
--- handles the use of enabling or disabling broadcasting and sends it to everyone in the channel.
--- @param val start or stop broadcasting
-function atroxArenaViewer:handleBroadcasting(val)
-	message["std"] = {
-		event = AAV_COMM_EVENT["cmd_broadcast" .. val],
-		target = nil,
-		version = AAV_VERSIONMAJOR.."."..AAV_VERSIONMINOR.."."..AAV_VERSIONBUGFIX,
-	}
-	
-	if (val == "start") then
-		print(L.CMD_ENABLE_BROADCAST)
-		atroxArenaViewerData.current.broadcast = true
-		for k,v in pairs(spectators) do spectators[k] = nil end
-		
-		if (atroxArenaViewerData.current.inFight) then
-			self:handleQueueTimer("start")
-		end
-	elseif (val == "stop") then
-		print(L.CMD_DISABLE_BROADCAST)
-		atroxArenaViewerData.current.broadcast = false
-		
-		-- broadcasting that you're broadcasting
-		
-		if (atroxArenaViewerData.current.inFight) then
-			self:handleQueueTimer("stop")
-		end
-	end
-	
-	self:SendCommMessage(AAV_COMM_LOOKUPBROADCAST, self:Serialize(message["std"]), self:getCommMethod(), nil)
-end
-
-----
--- connects someone to a broadcaster.
--- @param name broadcaster's name
-function atroxArenaViewer:connectToBroadcast(name)
-	message["std"] = {
-		target = name,
-		event = AAV_COMM_EVENT["cmd_connect"],
-		version = AAV_VERSIONMAJOR.."."..AAV_VERSIONMINOR.."."..AAV_VERSIONBUGFIX
-	}
-	self:SendCommMessage(AAV_COMM_LOOKUPBROADCAST, self:Serialize(message["std"]), self:getCommMethod(), nil)
-end
-
-----
--- incoming match data.
-function atroxArenaViewer:commHandleMatchData(prefix, msg, dist, sender)
-	local message = AAV_Util:split(msg, '^')
-	if (atroxArenaViewerData.current.listening == sender) then
-		for k,v in pairs(message) do
-			local post = AAV_Util:split("0," .. v, ',')
-			self:executeMatchData(0, post)
-		end
-	end
-end
-
-----
--- sends an info about a single player
--- @param data serialized data
-function atroxArenaViewer:sendPlayerInfo(key, data)
-	if (atroxArenaViewerData.current.broadcast) then
-		message["dude"] = {
-			event = AAV_COMM_EVENT["cmd_updateplayer"],
-			bracket = self:getCurrentBracket(),
-			guid = key,
-			dude = data,
-		}
-		self:SendCommMessage(AAV_COMM_LOOKUPBROADCAST, self:Serialize(message["dude"]), self:getCommMethod(), nil)
-		
-	end
-end
-
----- 
--- sendMatchInfo
-function atroxArenaViewer:sendAllPlayerInfo(sender)
-	message["dudes"] = {
-		target = sender,
-		event = AAV_COMM_EVENT["cmd_updateallplayers"],
-		bracket = self:getCurrentBracket(),
-		dudes = M:getDudesData(),
-		map = self:getCurrentMapId(),
-	}
-
-	self:SendCommMessage(AAV_COMM_LOOKUPBROADCAST, self:Serialize(message["dudes"]), self:getCommMethod(), nil)
-	message["dudes"].map = nil
-end
-
-function atroxArenaViewer:sendNewMatchInfo()
-	message["std"] = {
-		event = AAV_COMM_EVENT["cmd_newmatch"],
-		target = nil,
-		version = nil,
-		bracket = self:getCurrentBracket(),
-		--map = M:getCurrentMap(),
-	}
-	
-	self:SendCommMessage(AAV_COMM_LOOKUPBROADCAST, self:Serialize(message["std"]), self:getCommMethod(), nil)
-	message["std"].bracket = nil
-	--message["std"].map = nil
-end
-
-function atroxArenaViewer:changeBroadcast()
-	if (atroxArenaViewerData.current.broadcast == true) then
-		self:handleBroadcasting("stop")
-		
-	elseif (atroxArenaViewerData.current.broadcast == false) then
-		self:handleBroadcasting("start")
-	end
 end
 
 function atroxArenaViewer:changeRecording()
@@ -533,10 +159,6 @@ function atroxArenaViewer:changeRecording()
 end
 
 
-function atroxArenaViewer:OnDisable()
-    
-end
-
 function atroxArenaViewer:onUpdate(elapsed)
 	-- update combat text movements
 	if (T) then
@@ -550,31 +172,8 @@ end
 ----
 -- status 1 = in queue, in arena: message board; 2 = entered
 function atroxArenaViewer:UPDATE_BATTLEFIELD_STATUS(event, status)
-	if (atroxArenaViewerData.current.broadcast or atroxArenaViewerData.current.record and M) then
-		if (atroxArenaViewerData.current.broadcast and status == 1 and currentstate == 2) then
-		-- unqueue
-			currentstate = 1
-			message["std"] = {
-				event = AAV_COMM_EVENT["cmd_status"],
-				target = nil,
-				version = nil,
-				state = currentstate,
-			}
-			self:SendCommMessage(AAV_COMM_LOOKUPBROADCAST, self:Serialize(message["std"]), self:getCommMethod(), nil)
-			message["std"].state = nil
-			
-		elseif (atroxArenaViewerData.current.broadcast and status == 1 and not atroxArenaViewerData.current.inArena) then
-			currentstate = 2
-			message["std"] = {
-				event = AAV_COMM_EVENT["cmd_status"],
-				target = nil,
-				version = nil,
-				state = currentstate,
-			}
-			self:SendCommMessage(AAV_COMM_LOOKUPBROADCAST, self:Serialize(message["std"]), self:getCommMethod(), nil)
-			message["std"].state = nil
-			
-		elseif (status == 1 and atroxArenaViewerData.current.inArena) then		
+	if (atroxArenaViewerData.current.record and M) then	
+		if (status == 1 and atroxArenaViewerData.current.inArena) then		
 			local found
 			for i=0,1 do
 				found = false
@@ -597,34 +196,9 @@ function atroxArenaViewer:UPDATE_BATTLEFIELD_STATUS(event, status)
 						M:setTeams(i, "Team " .. (i+1), 0, 0, 0)
 					end
 				end
-				
-				if (atroxArenaViewerData.current.broadcast) then
-					message["stats"] = {
-						event = AAV_COMM_EVENT["cmd_matchend"],
-						match = M:getTeams(),
-						dudes = M:getDudesData(),
-						bracket = self:getCurrentBracket(),
-					}
-					self:SendCommMessage(AAV_COMM_LOOKUPBROADCAST, self:Serialize(message["stats"]), self:getCommMethod(), nil)
-				end
 			end
-			
-		elseif (atroxArenaViewerData.current.broadcast and status == 2) then
-			currentstate = 3
-			message["std"] = {
-				event = AAV_COMM_EVENT["cmd_status"],
-				target = nil,
-				version = nil,
-				state = currentstate,
-				map = self:getCurrentMapId(),
-			}
-			self:SendCommMessage(AAV_COMM_LOOKUPBROADCAST, self:Serialize(message["std"]), self:getCommMethod(), nil)
-			message["std"].state = nil
-			message["std"].map = nil
-			
 		end
 	end
-	
 end
 
 ----
@@ -637,20 +211,17 @@ if (atroxArenaViewerData.current.record == true) then
 			atroxArenaViewerData.current.entered = self:getCurrentTime()
 			atroxArenaViewerData.current.time = GetTime()
 			M:setBracket(self:getCurrentBracket())
-			self:sendNewMatchInfo() -- match starts
 			
 			for i = 1, 5 do
 				if (UnitExists("raid" .. i)) then
 					local key, player = M:updateMatchPlayers(1, "raid" .. i)
 					--self:ScheduleTimer("initArenaMatchUnits", AAV_INITOFFTIME, {"raid" .. i, 1})
 					--self:initArenaMatchUnits({"raid" .. i, 1})
-					self:sendPlayerInfo(key, player)
 				end
 			end
 			for i = 1, self:getCurrentBracket() do
 				if (UnitExists("arena" .. i)) then
 					local key, player = M:updateMatchPlayers(2, "arena"..i)
-					self:sendPlayerInfo(key, player)
 				end
 			end
 						
@@ -667,14 +238,13 @@ function atroxArenaViewer:CHAT_MSG_BG_SYSTEM_NEUTRAL(event, msg)
 			atroxArenaViewerData.current.entered = self:getCurrentTime()
 			atroxArenaViewerData.current.time = GetTime()
 			M:setBracket(self:getCurrentBracket())
-			self:sendNewMatchInfo() -- match starts
+
 			
 			for i = 1, 5 do
 				if (UnitExists("raid" .. i)) then
 					local key, player = M:updateMatchPlayers(1, "raid" .. i)
 					--self:ScheduleTimer("initArenaMatchUnits", AAV_INITOFFTIME, {"raid" .. i, 1})
 					--self:initArenaMatchUnits({"raid" .. i, 1})
-					self:sendPlayerInfo(key, player)
 				end
 			end
 			
@@ -682,90 +252,27 @@ function atroxArenaViewer:CHAT_MSG_BG_SYSTEM_NEUTRAL(event, msg)
 			self:handleQueueTimer("start")
 		end
 		currentstate = 8
-		if (atroxArenaViewerData.current.broadcast) then
-			message["std"] = {
-				event = AAV_COMM_EVENT["cmd_status"],
-				target = nil,
-				version = nil,
-				state = currentstate,
-			}
-			self:SendCommMessage(AAV_COMM_LOOKUPBROADCAST, self:Serialize(message["std"]), self:getCommMethod(), nil)
-			message["std"].state = nil
-		end
-		
 	elseif (msg == L.ARENA_60) then
 		currentstate = 4
-		if (atroxArenaViewerData.current.broadcast) then
-			message["std"] = {
-				event = AAV_COMM_EVENT["cmd_status"],
-				target = nil,
-				version = nil,
-				state = currentstate,
-				map = self:getCurrentMapId(),
-			}
-			self:SendCommMessage(AAV_COMM_LOOKUPBROADCAST, self:Serialize(message["std"]), self:getCommMethod(), nil)
-			message["std"].state = nil
-			message["std"].map = nil
-		end
 			for i = 1, self:getCurrentBracket() do
 				if (UnitExists("arena" .. i)) then
 					local key, player = M:updateMatchPlayers(2, "arena"..i)
-					self:sendPlayerInfo(key, player)
 				end
 			end	
 	elseif (msg == L.ARENA_45) then
 		currentstate = 5
-		if (atroxArenaViewerData.current.broadcast) then
-			message["std"] = {
-				event = AAV_COMM_EVENT["cmd_status"],
-				target = nil,
-				version = nil,
-				state = currentstate,
-				map = self:getCurrentMapId(),
-			}
-			self:SendCommMessage(AAV_COMM_LOOKUPBROADCAST, self:Serialize(message["std"]), self:getCommMethod(), nil)
-			message["std"].state = nil
-			message["std"].map = nil
-		end
 	elseif (msg == L.ARENA_30) then
 		currentstate = 6
-		if (atroxArenaViewerData.current.broadcast) then
-			message["std"] = {
-				event = AAV_COMM_EVENT["cmd_status"],
-				target = nil,
-				version = nil,
-				state = currentstate,
-				map = self:getCurrentMapId(),
-			}
-			self:SendCommMessage(AAV_COMM_LOOKUPBROADCAST, self:Serialize(message["std"]), self:getCommMethod(), nil)
-			message["std"].state = nil
-			message["std"].map = nil
-		
-		end
 			for i = 1, self:getCurrentBracket() do
 				if (UnitExists("arena" .. i)) then
 					local key, player = M:updateMatchPlayers(2, "arena"..i)
-					self:sendPlayerInfo(key, player)
 				end
 			end
 	elseif (msg == L.ARENA_15) then
 		currentstate = 7
-		if (atroxArenaViewerData.current.broadcast) then
-			message["std"] = {
-				event = AAV_COMM_EVENT["cmd_status"],
-				target = nil,
-				version = nil,
-				state = currentstate,
-				map = self:getCurrentMapId(),
-			}
-			self:SendCommMessage(AAV_COMM_LOOKUPBROADCAST, self:Serialize(message["std"]), self:getCommMethod(), nil)
-			message["std"].state = nil
-			message["std"].map = nil
-		end
 			for i = 1, self:getCurrentBracket() do
 				if (UnitExists("arena" .. i)) then
 					local key, player = M:updateMatchPlayers(2, "arena"..i)
-					self:sendPlayerInfo(key, player)
 				end
 			end
 	end
@@ -806,19 +313,6 @@ function atroxArenaViewer:ZONE_CHANGED_NEW_AREA(event, unit)
 				M:setMatchEnd()
 				M:saveToVariable(matchid)
 			end
-			
-			if (atroxArenaViewerData.current.broadcast) then
-				currentstate = 1
-				message["std"] = {
-					event = AAV_COMM_EVENT["cmd_status"],
-					target = nil,
-					version = nil,
-					state = currentstate,
-				}
-				self:SendCommMessage(AAV_COMM_LOOKUPBROADCAST, self:Serialize(message["std"]), self:getCommMethod(), nil)
-				message["std"].state = nil
-			end
-			
 			atroxArenaViewerData.current.inArena = false
 			atroxArenaViewerData.current.entered = 0
 			atroxArenaViewerData.current.time = 0
@@ -858,7 +352,6 @@ function atroxArenaViewer:handleEvents(val)
 		
 	end
 end
-
 ----
 -- returns the player, null if not initialized.
 -- @return T playstub
@@ -916,11 +409,6 @@ end
 function atroxArenaViewer:createMessage(tick, msg)
 	if (atroxArenaViewerData.current.record) then
 		M:createMessage(tick .. "," .. msg)
-	end
-	
-	-- broadcasting
-	if (atroxArenaViewerData.current.broadcast) then
-		table.insert(queue, msg)
 	end
 end
 
@@ -1063,7 +551,6 @@ function atroxArenaViewer:UNIT_NAME_UPDATE(event, unit)
 		local sourceGUID = UnitGUID(unit)
 		
 		M:getDudesData()[sourceGUID].name = UnitName(unit)
-		self:sendPlayerInfo(sourceGUID, M:getDudesData()[sourceGUID])
 	end
 end
 
@@ -1078,7 +565,6 @@ function atroxArenaViewer:ARENA_OPPONENT_UPDATE(event, unit, type)
 		if (arenaUnits[unit] == "playerUnit") then
 
 			local key, player = M:updateMatchPlayers(2, unit)
-			self:sendPlayerInfo(key, player)
 			
 			--self:ScheduleTimer("initArenaMatchUnits", AAV_INITOFFTIME, {unit, 2})
 			--self:initArenaMatchUnits({unit, 2})
@@ -1095,13 +581,6 @@ function atroxArenaViewer:ARENA_OPPONENT_UPDATE(event, unit, type)
 	end
 end
 
-----
--- triggered, when an arena match ended (3 times).
-function atroxArenaViewer:UPDATE_BATTLEFIELD_SCORE(event, unit)
-	--print("Battlefield score has triggered, has match ended?")
-	--self:handleEvents("unregister")
-	
-end
 --HACK FOR PENANCE BECAUSE BLACKROCK'S core
 function atroxArenaViewer:UNIT_SPELLCAST_CHANNEL_START(event, unit)
 	local spell, rank, displayName, icon, startTime, endTime, isTradeSkill = UnitChannelInfo(unit)	
@@ -1131,20 +610,6 @@ function atroxArenaViewer:COMBAT_LOG_EVENT_UNFILTERED(event, ...)
 	local source = M:getGUIDtoNumber(sourceGUID)
 	local dest = M:getGUIDtoNumber(destGUID)
 	if (not absorbed) then absorbed = 0 end
-	
-	-- check if name is unknown
-	--[[
-	if (source and M:getDudesData()[sourceGUID].name == L.UNKNOWN) then
-		M:getDudesData()[sourceGUID].name = UnitName(M:getGUIDtoTarget(sourceGUID))
-		self:sendPlayerInfo(sourceGUID, M:getDudesData()[sourceGUID])
-		
-	end
-	if (dest and M:getDudesData()[destGUID].name == L.UNKNOWN) then
-		M:getDudesData()[destGUID].name = UnitName(M:getGUIDtoTarget(destGUID))
-		self:sendPlayerInfo(destGUID, M:getDudesData()[destGUID])
-	end
-	--]]
-	
 	
 	-- TYPE 3
 	if (type == "SWING_DAMAGE") then
@@ -1405,13 +870,6 @@ function atroxArenaViewer:getSkillLegend(tab)
 end
 
 ----
--- returns all spectators to own broadcasted match.
--- @return spectator list
-function atroxArenaViewer:getSpectators()
-	return spectators
-end
-
-----
 -- exports the match data.
 -- @param num match id
 function atroxArenaViewer:getExportString(num)
@@ -1466,14 +924,6 @@ function atroxArenaViewer:evaluateMatchData()
 		end
 	end
 end
-
-
-function atroxArenaViewer:commEvaluateBroadcastData(prefix, msg, dist, sender)
-	if (atroxArenaViewerData.current.listening == sender) then
-		
-	end
-end
-
 
 function atroxArenaViewer:executeMatchData(tick, data)
 	local t = tonumber(data[2])
@@ -1587,19 +1037,6 @@ function atroxArenaViewer:CHAT_MSG_ADDON(event, prefix)
 			self:UnregisterEvent("CHAT_MSG_RAID_BOSS_EMOTE")
 			self:UnregisterEvent("ARENA_OPPONENT_UPDATE")
 			
-
-		
-			if (atroxArenaViewerData.current.broadcast) then
-				currentstate = 1
-				message["std"] = {
-					event = AAV_COMM_EVENT["cmd_status"],
-					target = nil,
-					version = nil,
-					state = currentstate,
-				}
-				self:SendCommMessage(AAV_COMM_LOOKUPBROADCAST, self:Serialize(message["std"]), self:getCommMethod(), nil)
-				message["std"].state = nil
-			end
 			atroxArenaViewerData.current.inArena = false
 			atroxArenaViewerData.current.entered = 0
 			atroxArenaViewerData.current.time = 0
