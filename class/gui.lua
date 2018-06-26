@@ -343,7 +343,6 @@ function AAV_Gui:createSeekerBar(parent, elapsed)
 end
 
 function AAV_Gui:createStatsFrame(parent)
-	
 	local stats = CreateFrame("Frame", "$parentStats", parent)
 	stats:SetHeight(parent:GetHeight())
 	stats:SetWidth(parent:GetWidth())
@@ -399,10 +398,36 @@ function AAV_Gui:createDetailTeam(parent, num, bracket)
 	team:SetJustifyH("LEFT")
 	team:SetPoint("TOPLEFT", rating, 0, 0)
 	--mmr:SetTextColor()
-	team:Show()
-	
+	team:Show()	
 end
 
+function AAV_Gui:createInformationHack(parent)
+	
+	local infoicon = CreateFrame("Frame", "$parentInformation", parent)
+	infoicon:SetWidth(16)
+	infoicon:SetHeight(16)
+	infoicon:SetPoint("BOTTOMLEFT", 10, 4)
+	infoicon:EnableMouse(true)
+	infoicon:SetScript("OnEnter", function() 
+		infoicon:SetScript("OnUpdate", function()
+			AAV_Gui:SetGameTooltip("CD HACK DETECTED" , 0, infoicon)
+		end)
+	end)
+	infoicon:SetScript("OnLeave", function() 
+		GameTooltip:FadeOut()
+		infoicon:SetScript("OnUpdate", nil)
+	end)
+	
+	infoicon:Hide()
+	
+	local infoicontex = infoicon:CreateTexture(nil)
+	infoicontex:SetAllPoints(infoicon)
+	infoicontex:SetTexture("Interface\\FriendsFrame\\InformationIcon")
+	infoicon.texture = infoicontex
+	infoicontex:Show()
+	
+	return infoicon
+end
 function AAV_Gui:createButtonDetail(parent)
 	
 	local detail = CreateFrame("BUTTON", "$parentViewDetail", parent, "UIPanelButtonTemplate")
@@ -431,34 +456,25 @@ function AAV_Gui:createButtonReplay(parent)
 	replay:SetHeight(25)
 	replay:Show()
 	replay:SetText("Replay from 0.00")
-
-	
---[[local replayinfo = parent:CreateFontString("$parentReplayInfo", "ARTWORK", "GameFontNormal")
-	replayinfo:SetFont("Fonts\\FRIZQT__.TTF", 10, "OUTLINE")
-	replayinfo:SetJustifyH("LEFT")
-	replayinfo:SetPoint("BOTTOMRIGHT", -250, 22)
-	replayinfo:SetText("Replay from current time:")
-	replayinfo:Show() ]]--
 	
 	return replay
 end
 
-function AAV_Gui:createTeamHead(parent, posY, team)
+function AAV_Gui:createTeamHead(parent)
 	
 	local head = parent:CreateFontString("$parentName", "ARTWORK", "GameFontNormal")
 	head:SetFont("Fonts\\FRIZQT__.TTF", 20, "OUTLINE")
 	head:SetJustifyH("LEFT")
-	head:SetPoint("TOPLEFT", parent, 20, -25 - posY - (team * 55) + 15)
 	head:SetTextColor(1, 1, 1)
 	
 	return head
 end
 
-function AAV_Gui:createDetailEntry(parent, posY, i, team)
+function AAV_Gui:createDetailEntry(parent)
+
 	local entry = CreateFrame("Frame", "$parentEntry", parent)
 	entry:SetHeight(AAV_DETAIL_ENTRYHEIGHT)
 	entry:SetWidth(AAV_DETAIL_ENTRYWIDTH)
-	entry:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, -35 - posY - (team * 55) - (25 * i))
 	
 	local icon = CreateFrame("Frame", "$parentIcon", entry)
 	icon:SetWidth(20)
@@ -470,7 +486,6 @@ function AAV_Gui:createDetailEntry(parent, posY, i, team)
 	icon.texture = t
 	icon:SetPoint("TOPLEFT", entry, 20, -5)
 	icon:Show()
-	
 	
 	local name = parent:CreateFontString("$parentName", "ARTWORK", "GameFontNormal")
 	name:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE")
@@ -514,7 +529,52 @@ function AAV_Gui:createDetailEntry(parent, posY, i, team)
 	mmr:SetPoint("BOTTOMLEFT", rc, 80, 0)
 	mmr:SetTextColor(1, 1, 1)
 	
-	return entry, icon, name, dd, hd, h, rc, mmr
+	
+	--CHEAT DETECTOR
+	local infobutton = CreateFrame("Frame", "$parentInfo", entry)
+	infobutton:SetWidth(20)
+	infobutton:SetHeight(20)
+	infobutton:EnableMouse(true)
+	infobutton:SetScript("OnEnter", function() 
+	infobutton:SetScript("OnUpdate", function()
+	AAV_Gui:SetGameTooltip("CD HACK DETECTED" , 0, infobutton)
+		end)
+	end)
+	infobutton:SetScript("OnLeave", function() 
+		GameTooltip:FadeOut()
+		infobutton:SetScript("OnUpdate", nil)
+	end)
+	
+	infobutton:Hide()
+	
+	local infotexture = infobutton:CreateTexture(nil)
+	infotexture:SetAllPoints(infobutton)
+	infotexture:SetTexture("Interface\\FriendsFrame\\InformationIcon")
+	infobutton.texture = infotexture
+	infotexture:Show()
+	
+	local cheatericon = CreateFrame("Frame", "$parentcheatericon", entry)
+	cheatericon:SetWidth(20)
+	cheatericon:SetHeight(20)
+	
+	local tee = cheatericon:CreateTexture(nil)
+	--tee:SetTexture()
+	tee:SetAllPoints(cheatericon)
+	cheatericon.texture = tee
+	cheatericon:SetPoint("BOTTOMLEFT", infobutton, 30, 0)
+	cheatericon:Show()
+
+	local cheattext = parent:CreateFontString("$parentcheattext", "ARTWORK", "GameFontNormal")
+	cheattext:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE")
+	cheattext:SetJustifyH("LEFT")
+	cheattext:SetParent(entry)
+	cheattext:SetPoint("BOTTOMLEFT", cheatericon, 25, 0)
+	cheattext:SetTextColor(1, 1, 1)
+	cheattext:Show()
+
+
+	
+	return entry, icon, name, dd, hd, h, rc, mmr, cheatericon, cheattext, infobutton
 end
 
 function AAV_Gui:createStatusText(parent)

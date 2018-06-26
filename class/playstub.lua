@@ -29,8 +29,10 @@ function AAV_PlayStub:new()
 	self.matchTime = 0
 	self.viewdetail = true
 	self.isPlayOn = true
+	self.isCdHacking = false
 	self.cclist = {} -- used for preventing multiple ccs on same icon
 	self.cdlist = {} -- used to put cds on slider
+	self.cdhack = {}
 	
 	----
 	-- these skills won't be shown.
@@ -734,12 +736,12 @@ end
 -- @param elapsed time
 -- @param broadcast true = watches a broadcasts, false = local playing
 function AAV_PlayStub:createPlayer(bracket, elapsed, broadcast)
-	
 	if (not self.player) then 
 		self.origin, self.player, self.maptext = AAV_Gui:createPlayerFrame(self, bracket)
 		self.detail = AAV_Gui:createButtonDetail(self.origin)
 		self.playButton = AAV_Gui:createButtonPlay(self.origin)
 		self.replayButton = AAV_Gui:createButtonReplay(self.origin)
+		self.hackInfo = AAV_Gui:createInformationHack(self.detail)
 		self.seeker = {}
 		self.seeker.bar, self.seeker.back, self.seeker.slide, self.seeker.speedval, self.seeker.speed = AAV_Gui:createSeekerBar(self.player, elapsed)
 		self.seeker.status = AAV_Gui:createStatusText(self.origin)
@@ -805,6 +807,7 @@ function AAV_PlayStub:createPlayer(bracket, elapsed, broadcast)
 				self.playButton:Hide()
 				self.replayButton:Hide()
 				self.detail:SetText(L.VIEW_MATCH)
+				if(self.isCdHacking) then self.hackInfo:Hide() end
 				self.stats:Show()
 				-- stop timer
 			end
@@ -825,6 +828,7 @@ function AAV_PlayStub:createPlayer(bracket, elapsed, broadcast)
 			self:setTick(1)
 			self.seeker.status:Hide()
 			self:handleSeeker("show")
+			self.hackInfo:Hide()
 			for k,v in pairs(self.sliderCD) do
 				self.sliderCD[k]:Hide()
 			end
@@ -835,6 +839,7 @@ function AAV_PlayStub:createPlayer(bracket, elapsed, broadcast)
 		
 		AAV_Gui:setPlayerFrameSize(self.player, bracket)
 		AAV_Gui:setPlayerFrameSize(self.origin, bracket)
+		AAV_Gui:setPlayerFrameSize(self.stats, bracket)
 		
 	end
 	self.origin:Show()
@@ -851,9 +856,9 @@ function AAV_PlayStub:createPlayer(bracket, elapsed, broadcast)
 		self:createIndex()
 		self:setSeekerTooltip()
 		self.detail:Show()
-		
-		
-		self:createStats(self:getMatch()["teams"], self:getMatch()["combatans"]["dudes"], bracket)
+		if(self.isCdHacking) then self.hackInfo:Show() end
+
+		self:createStats(self:getMatch()["teams"], self:getMatch()["combatans"]["dudes"], bracket, self.cdhack)
 		self.sliderCD = {}
 		--SLIDER CD
 		for k,v in pairs(self.cdlist) do
@@ -875,18 +880,18 @@ function AAV_PlayStub:createPlayer(bracket, elapsed, broadcast)
 	end
 end
 
-function AAV_PlayStub:createStats(teamdata, matchdata, bracket)
+function AAV_PlayStub:createStats(teamdata, matchdata, bracket, cdhack)
 	local num = 1
 	if (#self.pool.stats == 0) then -- if empty
-		for k,v in pairs(teamdata) do		
-			local stat = AAV_TeamStats:new(self.stats, v, matchdata, k+1, bracket)
+		for k,v in pairs(teamdata) do	
+			local stat = AAV_TeamStats:new(self.stats, v, matchdata, k+1, bracket, cdhack)
 			self.pool.stats[num] = stat
 			table.insert(self.pool.stats, stat)
 			num = num + 1
 		end
 	else
 		for k,v in pairs(teamdata) do
-			self.pool.stats[num]:setValue(self.stats, v, matchdata, k+1, bracket)
+			self.pool.stats[num]:setValue(self.stats, v, matchdata, k+1, bracket, cdhack)
 			num = num + 1
 		end
 	end
@@ -1002,6 +1007,8 @@ function AAV_PlayStub:createIndex()
 	local events = {1, 2, 13}
 	self.index = {} -- resets previous indexi
 	self.cdlist = {} --reset previous cclist
+	self.cdhack	= {} --reset previous cdhack list
+	self.isCdHacking = false
 	
 	for ik,iv in pairs(events) do
 		for ic, iw in pairs(self:getDudesData()) do
@@ -1029,8 +1036,11 @@ function AAV_PlayStub:createIndex()
 		end
 	end
 	
-	local id, event, i, j, lastticktime = 0, 0, 0, 0, 0
-	local buff, debuff, cc, cd = {}, {}, {}, {}
+	local id, event, i, j, lastticktime, diff = 0, 0, 0, 0, 0, 0
+	local buff, debuff, cc, cd, lastcdused = {}, {}, {}, {}, {}
+	for a, b in pairs  (AAV_CHEATSKILS) do
+		lastcdused[a] = 0
+	end
 	--local resetcc = function(c) for k,v in pairs(c) do c.k = nil end end
 	--print(#self.data.data)
 	for k,v in pairs(self.data.data) do
@@ -1054,7 +1064,6 @@ function AAV_PlayStub:createIndex()
 			if (event == 1 or event == 2) then
 				if (not self.index[id][k]) then self.index[id][k] = {} end -- c = tick
 				self.index[id][k][event] = tonumber(s[4]) -- s[2] = event, s[4] = value
-			
 			elseif (event == 0) then
 				if (not buff[id]) then buff[id] = {} end
 				local bf = AAV_Util:split(s[6], ";")
@@ -1075,13 +1084,27 @@ function AAV_PlayStub:createIndex()
 				if (tonumber(s[6]) and AAV_CCSKILS[tonumber(s[5])]) then
 					cd[id][tonumber(s[5])] = AAV_CCSKILS[tonumber(s[5])]
 					
+					local dataOnTick = AAV_Util:split(self.data.data[k], ',')
+					
+					--For anticheat
+					if (tonumber(s[5]) and  AAV_CHEATSKILS[tonumber(s[5])]) then 
+						diff = dataOnTick[1] - lastcdused[tonumber(s[5])]
+						if (diff < AAV_CCSKILS[tonumber(s[5])] and lastcdused[tonumber(s[5])] ~= 0) then
+							self.isCdHacking = true
+							self.cdhack[id] = {}
+							self.cdhack[id][dataOnTick[1]] = diff..";"..tonumber(s[5])
+						end
+					lastcdused[tonumber(s[5])] = dataOnTick[1]
+					end
+					
 					--For slider CDS				
 					if (AAV_CDSKIlLS[tonumber(s[5])] and tonumber(s[5])) then
-						local dataOnTick = AAV_Util:split(self.data.data[k], ',')
+						
 						self.cdlist[dataOnTick[1]] = {}
 						self.cdlist[dataOnTick[1]][s[5]] = id
 					end
-				end					
+				end			
+				
 			elseif (event == 13) then
 			
 				-- buff
@@ -1187,8 +1210,6 @@ function AAV_PlayStub:createIndex()
 			
 		end
 	end
-
-
 end
 
 ----

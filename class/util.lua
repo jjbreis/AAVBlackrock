@@ -105,7 +105,7 @@ AAV_CCSKILS = {
 	[23920]	= 10,	-- Spell Reflection
 	[3411]	= 30,	-- Intervene
 	[55694]	= 180,	-- Enraged Regeneration
-	[47486]	= 6,	-- Mortal Strike
+	[47486]	= 5,	-- Mortal Strike
 	[46924]	= 75,	-- Bladestorm
 	[12328]	= 30,	-- Sweeping Strikes
 	[12975]	= 180,	-- Last Stand
@@ -265,7 +265,7 @@ AAV_CCSKILS = {
 	[36554] = 30,	-- Shadow Step
 	
 	-- SHAMAN
-	[57994] = 6,	-- Wind Shear
+	[57994] = 5,	-- Wind Shear
 	[8177] 	= 11.5,	-- Grounding Totem
 	[32182] = 600,	-- Heroism
 	[2825] 	= 600,	-- Bloodlust
@@ -287,6 +287,16 @@ AAV_CCSKILS = {
 	[59752]	= 120,	-- Every Man for Himself
 	[42292]	= 120,	-- PvP Trinket
 }
+----
+--
+
+AAV_CHEATSKILS = {
+	[57994] = 5,	-- Wind Shear
+	[48825] = 5, 	-- Holy Shock
+	[47486]	= 5,	-- Mortal Strike
+	[49050]	= 8,	-- Aimed Shot
+}
+
 ----
 --
 AAV_CDSKIlLS = {
