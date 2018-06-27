@@ -23,6 +23,7 @@ L.CONF_HELP_LINE1				= "AAV帮助 - atrox竞技场播放器"
 L.CONF_HELP_LINE2				= "ui"
 L.CONF_HELP_LINE3				= "delete all"
 L.CONF_HELP_LINE4				= "record — 是否记录比赛"
+L.CONF_HELP_LINE5				= "import"
 
 L.STATUS						= "状态"
 L.STATUS_IDLE					= "空闲"

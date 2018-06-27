@@ -13,7 +13,8 @@ SlashCmdList["ATROXARENAVIEWER"] = function(msg)
 	
 	if (msg == "lookup") then
 		atroxArenaViewer:lookup()		
-		
+	elseif (msg == "import") then
+		StaticPopup_Show("AAV_IMPORT_DIALOG")
 	elseif (msg == "ui") then
 		if(AAV_TableGui:isMatchesFrameShowing()) then
 			AAV_TableGui:hideMatchesFrame()
@@ -71,9 +72,6 @@ SlashCmdList["ATROXARENAVIEWER"] = function(msg)
 		print(L.CONF_HELP_LINE3)
 		print(L.CONF_HELP_LINE4)
 		print(L.CONF_HELP_LINE5)
-		print(L.CONF_HELP_LINE6)
-		print(L.CONF_HELP_LINE7)
-		print(L.CONF_HELP_LINE8)
 
 	end
 	

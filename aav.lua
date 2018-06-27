@@ -3,12 +3,13 @@ atroxArenaViewer = LibStub("AceAddon-3.0"):NewAddon("atroxArenaViewer", "AceComm
 
 local L = LibStub("AceLocale-3.0"):GetLocale("atroxArenaViewer", false)
 
+local libS = LibStub:GetLibrary("AceSerializer-3.0")
+local libC = LibStub:GetLibrary("LibCompress")
+local libBase64 = LibStub("LibBase64-1.0")
+
 local M -- AAV_MatchStub
 local T -- AAV_PlayStub
 local timer -- playback timer
-local queuetimer -- queue timer
-local newversion = 0 -- prevent version check spam
-local queue = {} -- messages at issue
 local currentstate = 1
 local exportnum = 0
 local currentbracket = nil
@@ -21,13 +22,12 @@ local exceptauras = { -- these auras won't be tracked
 -------------------------
 -- GLOBALS
 -------------------------
-AAV_VERSIONMAJOR = 1
-AAV_VERSIONMINOR = 1
-AAV_VERSIONBUGFIX = 6
+AAV_VERSIONMAJOR = 2
+AAV_VERSIONMINOR = 0
+AAV_VERSIONBUGFIX = 1
 AAV_UPDATESPEED = 60
 AAV_AURAFULLINDEXSTEP = 1
 AAV_INITOFFTIME = 0.5
-AAV_QUEUESENDTIME = 0.1
 AAV_MANATRESHOLD = 5
 AAV_MINIMUM_COOLDOWN = 5
 AAV_AURA_LONGLASTING = 180
@@ -92,9 +92,29 @@ StaticPopupDialogs["AAV_EXPORT_DIALOG"] = {
 	button1 = "OK",
 	hasEditBox = true,
 	OnShow = function (s, d)
-		s.editBox:SetText(atroxArenaViewer:getExportString(exportnum))
+		s.editBox:SetText(atroxArenaViewer:getRecursiveExport(atroxArenaViewerData.data[exportnum]))
 		s.editBox:HighlightText(0)
 	end,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+}
+StaticPopupDialogs["AAV_IMPORT_DIALOG"] = {
+	text = "Paste String",
+	button1 = "Import",
+	button2 = "Cancel",
+	hasEditBox = true,
+	OnAccept = function(s, d)
+		local finaldata
+		local str = s.editBox:GetText()
+		local finalData = atroxArenaViewer:importMatch(str)
+		if(finalData) then
+		print("|cffe392c5<AAV>|r Sucessfully Exported Match")
+		local matchid = atroxArenaViewer:getNewMatchID()
+			atroxArenaViewerData.data[matchid] = atroxArenaViewerData.data[matchid] or {}
+			atroxArenaViewerData.data[matchid] = finalData
+		end
+	  end,
 	timeout = 0,
 	whileDead = true,
 	hideOnEscape = true,
@@ -115,7 +135,6 @@ function atroxArenaViewer:OnInitialize()
 				manabartexture = "oCB",
 				healthdisplay = 3, -- deficit percentage
 				shortauras = true, -- don't exceed debuff buff bar
-				uniquecolor = false, -- use class color as hp bar
 			}
 		}
 
@@ -215,8 +234,6 @@ if (atroxArenaViewerData.current.record == true) then
 			for i = 1, 5 do
 				if (UnitExists("raid" .. i)) then
 					local key, player = M:updateMatchPlayers(1, "raid" .. i)
-					--self:ScheduleTimer("initArenaMatchUnits", AAV_INITOFFTIME, {"raid" .. i, 1})
-					--self:initArenaMatchUnits({"raid" .. i, 1})
 				end
 			end
 			for i = 1, self:getCurrentBracket() do
@@ -226,7 +243,6 @@ if (atroxArenaViewerData.current.record == true) then
 			end
 						
 			self:handleEvents("register")
-			self:handleQueueTimer("start")
 		end
 currentstate = 8
 end
@@ -243,13 +259,10 @@ function atroxArenaViewer:CHAT_MSG_BG_SYSTEM_NEUTRAL(event, msg)
 			for i = 1, 5 do
 				if (UnitExists("raid" .. i)) then
 					local key, player = M:updateMatchPlayers(1, "raid" .. i)
-					--self:ScheduleTimer("initArenaMatchUnits", AAV_INITOFFTIME, {"raid" .. i, 1})
-					--self:initArenaMatchUnits({"raid" .. i, 1})
 				end
 			end
 			
 			self:handleEvents("register")
-			self:handleQueueTimer("start")
 		end
 		currentstate = 8
 	elseif (msg == L.ARENA_60) then
@@ -298,7 +311,6 @@ function atroxArenaViewer:ZONE_CHANGED_NEW_AREA(event, unit)
 		if (atroxArenaViewerData.current.inArena) then
 			
 			self:handleEvents("unregister")
-			self:handleQueueTimer("stop")
 			self:UnregisterEvent("CHAT_MSG_BG_SYSTEM_NEUTRAL")
 			self:UnregisterEvent("CHAT_MSG_RAID_BOSS_EMOTE")
 			self:UnregisterEvent("ARENA_OPPONENT_UPDATE")
@@ -409,29 +421,6 @@ end
 function atroxArenaViewer:createMessage(tick, msg)
 	if (atroxArenaViewerData.current.record) then
 		M:createMessage(tick .. "," .. msg)
-	end
-end
-
-function atroxArenaViewer:handleQueueTimer(val)
-	if (val == "start" and not self:TimeLeft(queuetimer)) then
-		queuetimer = self:ScheduleRepeatingTimer("queueMatchData", AAV_QUEUESENDTIME)
-	elseif (val == "stop" and self:TimeLeft(queuetimer)) then
-		self:CancelTimer(queuetimer)
-		queuetimer = nil
-	end
-end
-
-----
--- repeated function that sends all collected data in a defined period.
-function atroxArenaViewer:queueMatchData()
-	if (#queue > 0) then
-	print(table.concat(queue, "^"))
-		self:SendCommMessage(AAV_COMM_HANDLEMATCHDATA, table.concat(queue, "^"), self:getCommMethod(), nil)
-		
-		-- empty queue
-		for k,v in pairs(queue) do
-			queue[k] = nil
-		end
 	end
 end
 
@@ -565,9 +554,6 @@ function atroxArenaViewer:ARENA_OPPONENT_UPDATE(event, unit, type)
 		if (arenaUnits[unit] == "playerUnit") then
 
 			local key, player = M:updateMatchPlayers(2, unit)
-			
-			--self:ScheduleTimer("initArenaMatchUnits", AAV_INITOFFTIME, {unit, 2})
-			--self:initArenaMatchUnits({unit, 2})
 		end
 		
 	elseif (type == "unseen") then
@@ -809,74 +795,51 @@ end
 -- recursive function for export.
 -- @param tab table
 -- @param input if set then add skill legend
-function atroxArenaViewer:getRecursiveExport(tab, input)
-	local str = "{"
-	local first = true
-	for k,v in pairs(tab) do
-		if (not first) then str = str .. "," end
-		if (type(v) == "table") then
-			str = str .. '"' .. k .. '":' .. self:getRecursiveExport(v)
-		else
-			str = str .. '"' .. k .. '":"' .. v .. '"'
-		end
-		first = false
-	end
-	
-	if (input) then
-		str = str .. self:getSkillLegend(tab.data)
-	end
-	
-	str = str .. "}"
-	return str
-end
+function atroxArenaViewer:getRecursiveExport(inTable)
 
-----
--- exports all used skills in the match.
--- @param tab table
-function atroxArenaViewer:getSkillLegend(tab)
-	local str = ""
-	local tmp
-	local db = {}
-	
-	for k,v in pairs(tab) do 
-		
-		tmp = AAV_Util:split(v, ',')
-		
-		if (tmp[2] == "9" or tmp[2] == "10" or tmp[2] == "11" or tmp[2] == "12") then
-			if (not db[tonumber(tmp[5])]) then
-				db[tonumber(tmp[5])] = true
+-- Taken from WeakAuras: credit to Mirrored and the rest of their team
+	local ret = "{\n";
+	local function recurse(table, level)
+		for i,v in pairs(table) do
+			ret = ret..strrep("    ", level).."[";
+			if(type(i) == "string") then
+				ret = ret.."\""..i.."\"";
+			else
+				ret = ret..i;
 			end
-		elseif (tmp[2] == "13" or tmp[2] == "14") then
-			if (not db[tonumber(tmp[4])]) then
-				db[tonumber(tmp[4])] = true
+			ret = ret.."] = ";
+
+			if(type(v) == "number") then
+				ret = ret..v..",\n"
+			elseif(type(v) == "string") then
+				ret = ret.."\""..v:gsub("\\", "\\\\"):gsub("\n", "\\n"):gsub("\"", "\\\""):gsub("\124", "\124\124").."\",\n"
+			elseif(type(v) == "boolean") then
+				if(v) then
+					ret = ret.."true,\n"
+				else
+					ret = ret.."false,\n"
+				end
+			elseif(type(v) == "table") then
+				ret = ret.."{\n"
+				recurse(v, level + 1);
+				ret = ret..strrep("    ", level).."},\n"
+			else
+				ret = ret.."\""..tostring(v).."\",\n"
 			end
 		end
 	end
-	
-	str = ',"legend":['
-	
-	local first = true
-	for k,v in pairs(db) do
-		local name, rank, icon = GetSpellInfo(tonumber(k))
-		icon = string.gsub(string.lower(icon), "interface\\icons\\", "")
-		if (not first) then str = str .. "," end
-		str = str .. '{"id":' .. k .. ',"icon":"' .. icon .. '","name":"' .. name .. '"}'
-		first = false
-	end
-	
-	str = str .. ']'
-	
-	return str
-end
 
-----
--- exports the match data.
--- @param num match id
-function atroxArenaViewer:getExportString(num)
-	local str = "["
-	str = str .. self:getRecursiveExport(atroxArenaViewerData.data[num], true) 	
-	str = str .. "]"
-	return str
+	if(inTable) then
+		recurse(inTable, 1);
+	end
+	ret = ret.."}";
+	
+	local serialized = libS:Serialize(ret)
+	local addedCheck = format("%s::%s", serialized, "Jammin")
+	local compressed =  libC:Compress(addedCheck)
+	local encoded = libBase64.Encode(compressed)
+
+	return encoded
 end
 
 function atroxArenaViewer:getMatch()
@@ -1032,7 +995,6 @@ function atroxArenaViewer:CHAT_MSG_ADDON(event, prefix)
 		if (atroxArenaViewerData.current.inArena) then
 			
 			self:handleEvents("unregister")
-			self:handleQueueTimer("stop")
 			self:UnregisterEvent("CHAT_MSG_BG_SYSTEM_NEUTRAL")
 			self:UnregisterEvent("CHAT_MSG_RAID_BOSS_EMOTE")
 			self:UnregisterEvent("ARENA_OPPONENT_UPDATE")
@@ -1054,4 +1016,47 @@ function atroxArenaViewer:CHAT_MSG_SYSTEM(event, message)
 			M:setReplay(replay)
 		end
 	end
+end
+function atroxArenaViewer:importMatch(encoded)
+	if libBase64.IsBase64(encoded) then
+		local decoded = libBase64.Decode(encoded)
+
+		--Decompress the decoded data
+		local decompressed, message = libC:Decompress(decoded)
+		if(not decompressed) then
+			print("|cffe392c5<AAV>|r error decompressing: " .. message)
+			return 
+		end
+	
+		-- Deserialize the decompressed data
+		local serializedData, success, theCheck
+		serializedData = AAV_Util:split(decompressed, "^^::") -- "^^" indicates the end of the AceSerializer string
+		if (not serializedData[1] or serializedData[2] ~= "Jammin") then
+			print("|cffe392c5<AAV>|r ERROR - String is invalid or corrupted!")
+			print(serializedData[2])
+			return 
+		end
+		
+		serializedData[1] = format("%s%s", serializedData[1], "^^") --Add back the AceSerializer terminator
+		
+		local result, final = libS:Deserialize(serializedData[1])
+		if (not result) then
+			print("|cffe392c5<AAV>|r error deserializing " .. final)
+			return 
+		end
+		
+		-- STRING-TO_TABLE
+		local strToTable = loadstring(format("%s %s", "return", final))
+		if strToTable then
+			message, finalData = pcall(strToTable)
+		end
+		
+		if not finalData then
+			print("|cffe392c5<AAV>|r Error converting lua string to table:", message)
+			return 
+		end
+		return finalData
+	end
+	print("|cffe392c5<AAV>|r ERROR - String is corrupted or invalid")
+	return
 end

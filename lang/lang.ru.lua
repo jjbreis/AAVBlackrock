@@ -23,6 +23,7 @@ L.CONF_HELP_LINE1				= "AAV Help - atrox Arena Viewer"
 L.CONF_HELP_LINE2				= "ui"
 L.CONF_HELP_LINE3				= "delete all"
 L.CONF_HELP_LINE4				= "record - будет ли записана игра."
+L.CONF_HELP_LINE5				= "import"
 
 L.STATUS						= "Статус"
 L.STATUS_IDLE					= "Бездействие"

@@ -20,9 +20,10 @@ L.CONF_DESCR_PLAY				= "[전화 번호] 놀이 -이 일치하다 재생됩니다
 L.CONF_DESCR_DELETE				= "삭제 [번호] - 주어진 경기를 삭제합니다."
 L.CONF_MATCH_DELETED			= "경기가 성공적으로 삭제되었습니다."
 L.CONF_HELP_LINE1				= "Atrox 투기장 뷰어 - 도움말"
-L.CONF_HELP_LINE2				= "연극 - 일치하는 재생됩니다."
-L.CONF_HELP_LINE3				= "삭제 - 일치하는 포기를 삭제합니다."
+L.CONF_HELP_LINE2				= "ui - 일치하는 재생됩니다."
+L.CONF_HELP_LINE3				= "delete all - 일치하는 포기를 삭제합니다."
 L.CONF_HELP_LINE4				= "기록 - 여부 일치도 기록되지 않습니다."
+L.CONF_HELP_LINE5				= "import"
 
 L.STATUS						= "상태"
 L.STATUS_IDLE					= "휴식중"

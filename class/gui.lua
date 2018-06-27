@@ -876,17 +876,28 @@ function AAV_Gui:createMinimapIcon(parent, player)
 			
 			UIDropDownMenu_AddButton(info, level)
 			
-			-- EXPORT MATCH
-			--[[
+			 --EXPORT MATCH
+			
 			reset(info)
-			info.text       = "Export match"
+			info.text       = "Export Match"
 			info.notCheckable = true
 			info.notClickable = false
 			info.hasArrow	= true
 			info.func       = nil
 			
 			UIDropDownMenu_AddButton(info, level)
-			--]]
+			
+			 --IMPORT MATCH
+			
+			reset(info)
+			info.text       = "Import Match"
+			info.notCheckable = true
+			info.notClickable = false
+			info.hasArrow	= false
+			info.func       = function() StaticPopup_Show("AAV_IMPORT_DIALOG") end
+			
+			UIDropDownMenu_AddButton(info, level)
+			
 		end
 		
 		if (level == 2) then
@@ -987,35 +998,6 @@ function AAV_Gui:createMinimapIcon(parent, player)
 					UIDropDownMenu_AddButton(info, level)
 					
 					reset(info)
-					info.text = "Health Bar Color"
-					info.notCheckable = true
-					info.notClickable = true
-					info.hasArrow = false
-					info.func = nil
-					info.r = 0.8901960784313725
-					info.g = 0.5725490196078431
-					info.b = 0.7725490196078431
-					
-					UIDropDownMenu_AddButton(info, level)
-					
-					reset(info)
-					info.text = "Use Unique Color"
-					info.notCheckable = false
-					info.notClickable = false
-					info.hasArrow = false
-					info.checked = atroxArenaViewerData.defaults.profile.uniquecolor
-					info.func = function() atroxArenaViewerData.defaults.profile.uniquecolor = not atroxArenaViewerData.defaults.profile.uniquecolor end
-					
-					UIDropDownMenu_AddButton(info, level)
-					
-					reset(info)
-					info.notCheckable = true
-					info.notClickable = true
-					info.text = ""
-					
-					UIDropDownMenu_AddButton(info, level)
-					
-					reset(info)
 					info.text = "Health Bar Text"
 					info.notCheckable = true
 					info.notClickable = true
@@ -1066,9 +1048,7 @@ function AAV_Gui:createMinimapIcon(parent, player)
 					
 					UIDropDownMenu_AddButton(info, level)
 
-			elseif (UIDROPDOWNMENU_MENU_VALUE == "Export match") then
-				-- PLAY MATCH
-				
+			elseif (UIDROPDOWNMENU_MENU_VALUE == "Export match") then				
 				if (atroxArenaViewerData.data) then
 					
 					for i=1, math.ceil(#atroxArenaViewerData.data / 20) do
