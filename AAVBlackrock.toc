@@ -1,5 +1,5 @@
 ## Title: Atrox Arena Viewer Blackrock Edition
-## Author: zwacky and remastered by Jammin
+## Author: zwacky - adapted and improved by Jammin
 ## Interface: 30300
 ## SavedVariables: atroxArenaViewerData
 ## Notes: Record and view arena replays.
