@@ -11,7 +11,7 @@ local classIconTable
 local currentShowType
 
 ----
---Initializes the frame that holds the matchesTable. Parameters should be moved to conf.lua or aav.lua?
+--Initializes the frame that holds the matchesTable.
 function AAV_TableGui:createMatchesFrame()
 
 	local o = CreateFrame("Frame", "AAVMatches", UIParent)
@@ -353,7 +353,7 @@ end
 function AAV_TableGui:getClassColoredName(player)
 	--local r, g, b = AAV_Util:getTargetColor(player, true)
 	classIconTable = {}
-	if(player) then classIconTable[player] = "\124TInterface\\Addons\\aav\\res\\"..player..":30\124t" end
+	if(player) then classIconTable[player] = "\124TInterface\\Addons\\AAVBlackrock\\res\\"..player..":30\124t" end
 	--return "\124c" .. format("ff%02x%02x%02x", r * 255, g * 255, b * 255) .. player.name .. "\124r"
 end
 

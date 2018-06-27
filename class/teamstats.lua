@@ -50,7 +50,7 @@ function AAV_TeamStats:setValue(parent, teamdata, matchdata, team, bracket, cdha
 		if (w.player == 1 and w.team == team) then
 			self.entries[i]["entry"]:Show()
 			self.entries[i]["entry"]:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, -35 - self.posY - (team * 55) - (25 * (i-1)))
-			self.entries[i]["icon"].texture:SetTexture("Interface\\Addons\\aav\\res\\" .. w.class .. ".tga")
+			self.entries[i]["icon"].texture:SetTexture("Interface\\Addons\\AAVBlackrock\\res\\" .. w.class .. ".tga")
 			self.entries[i]["name"]:SetText(w.name)
 			self.entries[i]["name"]:SetTextColor(AAV_Util:getTargetColor(w, true))
 			self.entries[i]["damage"]:SetText(w.ddone)
@@ -69,7 +69,7 @@ function AAV_TeamStats:setValue(parent, teamdata, matchdata, team, bracket, cdha
 						example = w.name.." used "..GetSpellInfo(tmp[2]).." at "..m.." seconds with a CD of "..tmp[1]
 					end
 					self.entries[i]["cheaticon"]:Show()
-					self.entries[i]["cheaticon"].texture:SetTexture("Interface\\Addons\\aav\\res\\" .. w.class .. ".tga")
+					self.entries[i]["cheaticon"].texture:SetTexture("Interface\\Addons\\AAVBlackrock\\res\\" .. w.class .. ".tga")
 					self.entries[i]["cheattext"]:SetText(example)
 					self.entries[i]["cheattext"]:Show()
 					self.entries[i]["infobutton"]:SetPoint("BOTTOMLEFT", parent, 10,  10+(50*bracket) - ((team-1) * (25*bracket)) - (25 * (i-1)))

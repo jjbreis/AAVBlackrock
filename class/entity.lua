@@ -72,7 +72,7 @@ end
 -- @param name player name
 function AAV_PlayerEntity:setValue(class, name, maxhp, v)
 	self.data = v
-	self.icon.texture:SetTexture("Interface\\Addons\\aav\\res\\" .. class .. ".tga")
+	self.icon.texture:SetTexture("Interface\\Addons\\AAVBlackrock\\res\\" .. class .. ".tga")
 	self.name:SetText(name)
 	self.bar:SetMinMaxValues(0, maxhp)
 	self.text:SetText("100%") -- ugly hack [#37]

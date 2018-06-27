@@ -111,7 +111,7 @@ function AAV_Gui:createEntityBar(parent, v, y)
 	if (not v.class or v.class == "Unknown") then
 		t:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark.blp")
 	else
-		t:SetTexture("Interface\\Addons\\aav\\res\\" .. v.class .. ".tga")
+		t:SetTexture("Interface\\Addons\\AAVBlackrock\\res\\" .. v.class .. ".tga")
 	end
 	t:SetAllPoints(c)
 	c.texture = t
@@ -124,7 +124,7 @@ function AAV_Gui:createEntityBar(parent, v, y)
 	local b = CreateFrame("STATUSBAR", "$parentHealthBar", a)
 	b:SetWidth(135)
 	if (manauser) then b:SetHeight(AAV_GUI_HEALTHBARHEIGHT - AAV_GUI_MANABARHEIGHT) else b:SetHeight(AAV_GUI_HEALTHBARHEIGHT) end
-	b:SetStatusBarTexture("Interface\\Addons\\aav\\res\\" .. atroxArenaViewerData.defaults.profile.hpbartexture .. ".tga")
+	b:SetStatusBarTexture("Interface\\Addons\\AAVBlackrock\\res\\" .. atroxArenaViewerData.defaults.profile.hpbartexture .. ".tga")
 	--b:SetStatusBarColor(AAV_Util:getTargetColor(v, false))
 	b:SetMinMaxValues(0, UnitHealth("player"))
 	b:SetPoint("TOPLEFT", a:GetName(), 30, 1)
@@ -139,7 +139,7 @@ function AAV_Gui:createEntityBar(parent, v, y)
 	local m = CreateFrame("STATUSBAR", "$parentManaBar", a)
 	m:SetWidth(135)
 	m:SetHeight(AAV_GUI_MANABARHEIGHT)
-	m:SetStatusBarTexture("Interface\\Addons\\aav\\res\\" .. atroxArenaViewerData.defaults.profile.manabartexture .. ".tga")
+	m:SetStatusBarTexture("Interface\\Addons\\AAVBlackrock\\res\\" .. atroxArenaViewerData.defaults.profile.manabartexture .. ".tga")
 	--m:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
 	m:SetMinMaxValues(0,100)
 	
@@ -268,7 +268,7 @@ function AAV_Gui:createSeekerBar(parent, elapsed)
 	
 	local t = f:CreateTexture(nil)
 	--t:SetTexture(0.0, 0.0, 0.0)
-	t:SetTexture("Interface\\Addons\\aav\\res\\Smooth.tga")
+	t:SetTexture("Interface\\Addons\\AAVBlackrock\\res\\Smooth.tga")
 	t:SetVertexColor(0.4313, 0.4313, 0.4313)
 	t:SetAllPoints(f)
 	f.texture = t
@@ -283,7 +283,7 @@ function AAV_Gui:createSeekerBar(parent, elapsed)
 	--a:SetFrameStrata("MEDIUM")
 	a:SetWidth(f:GetWidth())
 	a:SetHeight(f:GetHeight())
-	a:SetStatusBarTexture("Interface\\Addons\\aav\\res\\Smooth.tga")
+	a:SetStatusBarTexture("Interface\\Addons\\AAVBlackrock\\res\\Smooth.tga")
 	a:SetStatusBarColor(1, 1, 1)
 	a:SetMinMaxValues(0, elapsed)
 	a:SetValue(0)
@@ -300,7 +300,7 @@ function AAV_Gui:createSeekerBar(parent, elapsed)
 	left:Show()
 	
 	local t = left:CreateTexture(nil)
-	t:SetTexture("Interface\\Addons\\aav\\res\\playerleft.tga")
+	t:SetTexture("Interface\\Addons\\AAVBlackrock\\res\\playerleft.tga")
 	t:SetAllPoints(left)
 	left.texture = t
 	
@@ -664,7 +664,7 @@ function AAV_Gui:createUsedSkill(parent, i)
 	local tt = f:CreateTexture(nil)
 	tt:SetAllPoints(tar)
 	tt:SetTexCoord(0, 1, 0, 0.5);
-	tt:SetTexture("Interface\\Addons\\aav\\res\\TARGETBG.tga")
+	tt:SetTexture("Interface\\Addons\\AAVBlackrock\\res\\TARGETBG.tga")
 	tar.texture = tt
 	--tar:SetFrameStrata("HIGH")
 	
@@ -712,7 +712,7 @@ function AAV_Gui:createInterruptFrame(parent)
 	f:Show()
 	
 	local t = f:CreateTexture(nil, "HIGH")
-	t:SetTexture("Interface\\Addons\\aav\\res\\X.tga")
+	t:SetTexture("Interface\\Addons\\AAVBlackrock\\res\\X.tga")
 	f.texture = t
 	t:SetAllPoints(f)
 	t:Show()
@@ -1268,7 +1268,7 @@ function AAV_Gui:createSliderCD(parent, timestamp, spellID, TeamID, elapsed)
 	
 	-- ARROWTEXTURE
 	local arrowtex = arrowframe:CreateTexture(nil)
-	arrowtex:SetTexture("Interface\\Addons\\aav\\res\\arrowDOT.tga")
+	arrowtex:SetTexture("Interface\\Addons\\AAVBlackrock\\res\\arrowDOT.tga")
 	arrowtex:SetAllPoints(arrowframe)
 	arrowframe.texture = arrowtex
 	arrowframe:Show()

@@ -1,4 +1,10 @@
-﻿
+﻿--[[
+
+Originally created by Zwacky - adapted and improved by Jammin
+Jammin#8283 on discord for any problems
+
+]]--
+
 atroxArenaViewer = LibStub("AceAddon-3.0"):NewAddon("atroxArenaViewer", "AceComm-3.0", "AceEvent-3.0", "AceTimer-3.0", "AceSerializer-3.0")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("atroxArenaViewer", false)
@@ -77,7 +83,6 @@ AAV_CC_MAXLISTING = 5
 AAV_DETAIL_ENTRYHEIGHT = 20
 AAV_DETAIL_ENTRYWIDTH = 560
 
-AAV_COMM_HANDLEMATCHDATA = "AAVHandleData"
 
 AAV_COMM_MAPS = {
 	[1] = L.ARENA_NAGRAND,
@@ -100,7 +105,7 @@ StaticPopupDialogs["AAV_EXPORT_DIALOG"] = {
 	hideOnEscape = true,
 }
 StaticPopupDialogs["AAV_IMPORT_DIALOG"] = {
-	text = "Paste String",
+	text = "Paste Match String",
 	button1 = "Import",
 	button2 = "Cancel",
 	hasEditBox = true,
@@ -152,7 +157,8 @@ function atroxArenaViewer:OnInitialize()
     
     local minimap = AAV_Gui:createMinimapIcon(self)
     
-    print("AAV v"..AAV_VERSIONMAJOR.."."..AAV_VERSIONMINOR.."."..AAV_VERSIONBUGFIX.. " " .. L.AAV_LOADED)
+    print("|cffe392c5<AAV Blackrock Version>|r v"..AAV_VERSIONMAJOR.."."..AAV_VERSIONMINOR.."."..AAV_VERSIONBUGFIX.. " " .. L.AAV_LOADED)
+
     
     self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
     self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS")

@@ -1,8 +1,8 @@
-## Title: AAV - atrox Arena Viewer
-## Author: zwacky
+## Title: Atrox Arena Viewer Blackrock Edition
+## Author: zwacky and remastered by Jammin
 ## Interface: 30300
 ## SavedVariables: atroxArenaViewerData
-## Notes: record and view arena replays.
+## Notes: Record and view arena replays.
 
 lib\LibStub-1.0\LibStub-1.0.xml
 lib\lib-st\lib-st.xml
@@ -27,7 +27,7 @@ lang\lang.ru.lua
 lang\lang.tw.lua
 lang\lang.fr.lua
 
-aav.lua
+AAVBlackrock.lua
 conf.lua
 class\matchstub.lua
 class\playstub.lua
