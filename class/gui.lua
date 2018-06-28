@@ -877,7 +877,6 @@ function AAV_Gui:createMinimapIcon(parent, player)
 			UIDropDownMenu_AddButton(info, level)
 			
 			 --EXPORT MATCH
-			
 			reset(info)
 			info.text       = "Export Match"
 			info.notCheckable = true
@@ -888,7 +887,6 @@ function AAV_Gui:createMinimapIcon(parent, player)
 			UIDropDownMenu_AddButton(info, level)
 			
 			 --IMPORT MATCH
-			
 			reset(info)
 			info.text       = "Import Match"
 			info.notCheckable = true
@@ -1048,9 +1046,10 @@ function AAV_Gui:createMinimapIcon(parent, player)
 					
 					UIDropDownMenu_AddButton(info, level)
 
-			elseif (UIDROPDOWNMENU_MENU_VALUE == "Export match") then				
+			elseif (UIDROPDOWNMENU_MENU_VALUE == "Export Match") then	
+			
 				if (atroxArenaViewerData.data) then
-					
+				
 					for i=1, math.ceil(#atroxArenaViewerData.data / 20) do
 						reset(info)
 						info.text = "Export Match " .. ((i-1) * 20)+1 .. "-" .. (i * 20)

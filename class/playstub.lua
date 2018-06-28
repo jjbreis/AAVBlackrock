@@ -267,7 +267,6 @@ end
 -- @param value health
 function AAV_PlayStub:setBar(id, value)
 	if (not self.entities[id]) then return end
-	
 	self.entities[id].bar:SetValue(value)
 	self.entities[id]:setHealthBarText()
 	--self.entities[id].text:SetText(self:getHealthBarText(id))

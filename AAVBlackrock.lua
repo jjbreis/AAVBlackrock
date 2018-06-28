@@ -231,7 +231,6 @@ end
 -- @param event
 -- @param msg message to compare
 function atroxArenaViewer:CHAT_MSG_RAID_BOSS_EMOTE(event, msg)
-
 if (atroxArenaViewerData.current.record == true) then
 			atroxArenaViewerData.current.entered = self:getCurrentTime()
 			atroxArenaViewerData.current.time = GetTime()
@@ -346,11 +345,10 @@ function atroxArenaViewer:handleEvents(val)
 		self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		self:RegisterEvent("UNIT_HEALTH")
 		self:RegisterEvent("UNIT_MANA")
+		self:RegisterEvent("UNIT_AURA")
 		self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
 		self:RegisterEvent("ARENA_OPPONENT_UPDATE")
-		self:RegisterEvent("UPDATE_BATTLEFIELD_SCORE")
 		self:RegisterEvent("UNIT_NAME_UPDATE")
-		self:RegisterEvent("UNIT_AURA")
 		atroxArenaViewerData.current.inFight = true
 		
 		
@@ -361,7 +359,6 @@ function atroxArenaViewer:handleEvents(val)
 		self:UnregisterEvent("UNIT_MANA")
 		self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_START")
 		self:UnregisterEvent("ARENA_OPPONENT_UPDATE")
-		self:UnregisterEvent("UPDATE_BATTLEFIELD_SCORE")
 		self:UnregisterEvent("UNIT_NAME_UPDATE")
 		self:UnregisterEvent("UNIT_AURA")
 		
@@ -487,7 +484,6 @@ function atroxArenaViewer:UNIT_AURA(event, unit)
 	if (sub ~= "raid" and sub ~= "aren") then return end
 	
 	local id = M:getGUIDtoNumber(UnitGUID(unit))
-
 	if (not id) then return end
 	
 	for n = 1, 40 do
@@ -899,7 +895,6 @@ function atroxArenaViewer:executeMatchData(tick, data)
 	
 	-- init
 	if (t == 0) then
-		
 		T:setBar(tonumber(data[3]), tonumber(data[4]))
 		T:setMaxBar(tonumber(data[3]), tonumber(data[5]))
 		--[[
