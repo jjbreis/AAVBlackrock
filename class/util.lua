@@ -294,7 +294,6 @@ AAV_CHEATSKILS = {
 	[57994] = 5,	-- Wind Shear
 	[48825] = 5, 	-- Holy Shock
 	[47486]	= 5,	-- Mortal Strike
-	[49050]	= 8,	-- Aimed Shot
 }
 
 ----
