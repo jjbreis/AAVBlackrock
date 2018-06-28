@@ -30,7 +30,7 @@ local exceptauras = { -- these auras won't be tracked
 -------------------------
 AAV_VERSIONMAJOR = 2
 AAV_VERSIONMINOR = 0
-AAV_VERSIONBUGFIX = 1
+AAV_VERSIONBUGFIX = 2
 AAV_UPDATESPEED = 60
 AAV_AURAFULLINDEXSTEP = 1
 AAV_INITOFFTIME = 0.5
