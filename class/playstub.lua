@@ -991,26 +991,23 @@ function AAV_PlayStub:createIndex()
 				if (tonumber(s[6]) and AAV_CCSKILS[tonumber(s[5])]) then
 					cd[id][tonumber(s[5])] = AAV_CCSKILS[tonumber(s[5])]
 					
-					local dataOnTick = AAV_Util:split(self.data.data[k], ',')
-					
 					--For anticheat
 					if (tonumber(s[6]) and  AAV_CHEATSKILS[tonumber(s[5])] ) then 
 						if (not lastcdused[tonumber(s[5])][id]) then lastcdused[tonumber(s[5])][id] = 0 end
-						diff = dataOnTick[1] - lastcdused[tonumber(s[5])][id]
+						diff = tonumber(s[1]) - lastcdused[tonumber(s[5])][id]
 						if (diff < AAV_CCSKILS[tonumber(s[5])] and lastcdused[tonumber(s[5])][id] ~= 0) then
 							self.isCdHacking = true
 							print("|cFFFF0000<AAV> Cheat Detector Triggered:|r CD Hack - Click  'Show Stats' to see more")
 							self.cdhack[id] = {}
-							self.cdhack[id][dataOnTick[1]] = diff..";"..tonumber(s[5])
+							self.cdhack[id][tonumber(s[1])] = diff..";"..tonumber(s[5])
 						end
-					lastcdused[tonumber(s[5])][id] = dataOnTick[1]
+					lastcdused[tonumber(s[5])][id] = tonumber(s[1])
 					end
 					
 					--For slider CDS				
 					if (AAV_CDSKIlLS[tonumber(s[5])] and tonumber(s[5])) then
-						
-						self.cdlist[dataOnTick[1]] = {}
-						self.cdlist[dataOnTick[1]][s[5]] = id
+						self.cdlist[tonumber(s[1])] = {}
+						self.cdlist[tonumber(s[1])][s[5]] = id
 					end
 				end			
 				
