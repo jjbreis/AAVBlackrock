@@ -4,12 +4,16 @@ local L = LibStub("AceLocale-3.0"):GetLocale("atroxArenaViewer", true)
 AAV_Gui = {}
 AAV_Gui.__index = AAV_Gui
 
+local currentPlayerFrame -- Fix this later (TODO)
+local currentPlayerObject = {} -- Fix this later (TODO)
+
 function AAV_Gui:createPlayerFrame(obj, bracket)
-	
 	if (not bracket) then
 		return
 	end
 	
+	currentPlayerObject = obj -- Fix this later (TODO)
+
 	local o = CreateFrame("Frame", "Root", UIParent)
 	o:SetFrameStrata("HIGH")
 	o:SetWidth(560)
@@ -20,8 +24,9 @@ function AAV_Gui:createPlayerFrame(obj, bracket)
 	f:SetFrameStrata("HIGH")
 	f:SetWidth(560)
 	f:SetPoint("TOPLEFT", o, "TOPLEFT", 0, 0)
-	
+	currentPlayerFrame = f:GetParent() -- Fix this later (TODO)
 	self:setPlayerFrameSize(f, bracket)
+	
 	--f:SetPoint("CENTER",0,0)
 	o:SetBackdrop({
 	  bgFile="Interface\\DialogFrame\\UI-DialogBox-Background",
@@ -55,7 +60,7 @@ function AAV_Gui:createPlayerFrame(obj, bracket)
 	
 	--m:SetWidth(mt:GetStringWidth() + 25)
 	
-	
+	--CLOSE BUTTON
 	local btn = CreateFrame("Button", "PlayerCloseButton", o)
 	btn:SetHeight(32)
 	btn:SetWidth(32)
@@ -71,6 +76,20 @@ function AAV_Gui:createPlayerFrame(obj, bracket)
 		obj:setOnUpdate("stop")
 	end)
 	btn:Show()
+	
+	--BACK BUTTON
+	local backbtn = CreateFrame("Button", "PlayerBackButton", o, "UIPanelButtonTemplate")
+	backbtn:SetHeight(25)
+	backbtn:SetWidth(40)
+	backbtn:SetText("Back")
+	backbtn:SetPoint("TOPLEFT" , o, "TOPLEFT", 5, -5)
+	backbtn:SetScript("OnClick", function (s, b, d)
+		obj:hidePlayer(s:GetParent())
+		obj:hideMovingObjects()
+		obj:setOnUpdate("stop")
+		AAV_TableGui:showMatchesFrame()
+	end)
+	backbtn:Show()
 	
 	return o, f, mt
 end
@@ -242,8 +261,8 @@ function AAV_Gui:createCooldownRanges(parent, team)
 	cb:SetFrameStrata("HIGH")
 	cb:SetWidth(45)
 	cb:SetHeight(100)
-	if (team == 1) then cb:SetPoint("BOTTOMRIGHT", parent, "TOPLEFT", 0, -32 + AAV_CC_ICONSIZE) end
-	if (team == 2) then cb:SetPoint("BOTTOMLEFT", parent, "TOPRIGHT", 0, -32 + AAV_CC_ICONSIZE) end
+	if (team == 1) then cb:SetPoint("BOTTOMRIGHT", parent, "TOPLEFT", 0, -52 + AAV_CC_ICONSIZE) end
+	if (team == 2) then cb:SetPoint("BOTTOMLEFT", parent, "TOPRIGHT", 0, -52 + AAV_CC_ICONSIZE) end
 	cb:Show()
 	
 	return cb
@@ -1102,80 +1121,6 @@ function AAV_Gui:createMinimapIcon(parent, player)
 			
 			for i=1, math.ceil(#atroxArenaViewerData.data / 20) do
 				
-	--[[			if (UIDROPDOWNMENU_MENU_VALUE == "Play Match " .. ((i-1) * 20)+1 .. "-" .. (i * 20)) then
-					
-					if (atroxArenaViewerData.data) then
-						for j=((i-1)*20)+1, (i*20) do
-							if (not atroxArenaViewerData.data[j]) then break end
-							reset(info)
-							local mapname = ""
-							if (type(atroxArenaViewerData.data[j]["map"])=="number") then
-								mapname = AAV_COMM_MAPS[atroxArenaViewerData.data[j]["map"]]
---[[							else
-								mapname = atroxArenaViewerData.data[j]["map"]
-							end
-							info.text = j .. " - " .. mapname .. " (" .. atroxArenaViewerData.data[j]["startTime"] .. ")"
-							info.notCheckable = true
-							info.notClickable = false
-							info.hasArrow = false
-							info.func = function() parent:createPlayer(j) parent:playMatch(j) end
-							
-							UIDropDownMenu_AddButton(info, level)
-						end
-					else
-						reset(info)
-						info.text = "none found"
-						info.notCheckable = true
-						info.notClickable = true
-						info.hasArrow = false
-						info.func = nil
-						
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-				
-				if (UIDROPDOWNMENU_MENU_VALUE == "Delete Match " .. ((i-1) * 20)+1 .. "-" .. (i * 20)) then
-					
-					if (atroxArenaViewerData.data) then
-						for j=((i-1)*20)+1, (i*20) do
-							if (not atroxArenaViewerData.data[j]) then break end
-							reset(info)
-							local mapname = ""
-							if (type(atroxArenaViewerData.data[j]["map"])=="number") then
-								mapname = AAV_COMM_MAPS[atroxArenaViewerData.data[j]["map"]]
---[[							else
-								mapname = atroxArenaViewerData.data[j]["map"]
-							end
-							info.text = j .. " - " .. mapname .. " (" .. atroxArenaViewerData.data[j]["startTime"] .. ")"
-							info.notCheckable = true
-							info.notClickable = false
-							info.hasArrow = false
-							info.func = function() parent:deleteMatch(j) end
-							
-							UIDropDownMenu_AddButton(info, level)
-						end
-						
-						reset(info)
-						info.text = "delete all " .. ((i-1) * 20)+1 .. "-" .. (i * 20)
-						info.notCheckable = true
-						info.notClickable = false
-						info.hasArrow = false
-						info.func = function() for k=(i-1*20)+1,(i-1*20)+1+20 do parent:deleteMatch((i-1*20)+1) end end
-						
-						UIDropDownMenu_AddButton(info, level)
-					else
-						reset(info)
-						info.text = "none found"
-						info.notCheckable = true
-						info.notClickable = true
-						info.hasArrow = false
-						info.func = nil
-						
-						UIDropDownMenu_AddButton(info, level)
-					end
-					
-				end ]]--
-				
 				if (UIDROPDOWNMENU_MENU_VALUE == "Export Match " .. ((i-1) * 20)+1 .. "-" .. (i * 20)) then
 					
 					if (atroxArenaViewerData.data) then
@@ -1217,6 +1162,12 @@ function AAV_Gui:createMinimapIcon(parent, player)
 				AAV_TableGui:hideMatchesFrame()
 			else
 				AAV_TableGui:showMatchesFrame()
+				if (currentPlayerFrame and currentPlayerFrame:IsShown()) then
+					currentPlayerObject:hidePlayer(currentPlayerFrame) -- Fix this later (TODO)
+					currentPlayerObject:hideMovingObjects() -- Fix this later (TODO)
+					currentPlayerObject:setOnUpdate("stop") -- Fix this later (TODO)
+					isThereObject = false
+				end
 			end
 		elseif (clickType == "RightButton") then
 			ToggleDropDownMenu(1, nil, menu, button, 10, 10);

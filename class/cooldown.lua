@@ -36,24 +36,6 @@ function AAV_Cooldown:setValue(parent, spellid, duration, entity, entry)
 	self.frame:SetPoint("BOTTOMLEFT", self.parent, "BOTTOMLEFT", self.posX, self.posY)
 	self.frame:SetAlpha(0)
 	self.frame:Show()
-	
-	-- Tooltip
-	self.icon:EnableMouse(true)
-	self.icon:SetScript("OnEnter", function(s) 
-		if (s:GetAlpha() > 0) then
-			GameTooltip:SetOwner(s, "ANCHOR_CURSOR", 0, 0)
-			if (rank ~= "") then
-				AAV_Gui:SetGameTooltip(name .. " (" .. rank .. ")", nil, s)
-			else
-				AAV_Gui:SetGameTooltip(name, nil, s)
-			end
-		end
-	end)
-	self.icon:SetScript("OnLeave", function(s) 
-		GameTooltip:FadeOut()
-	end)
-	
-	
 end
 
 function AAV_Cooldown:isDead()
