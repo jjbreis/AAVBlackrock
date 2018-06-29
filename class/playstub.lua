@@ -693,10 +693,8 @@ end
 -- @param elapsed time
 function AAV_PlayStub:createPlayer(bracket, elapsed)
 	if (not self.player) then 
-		self.origin, self.player, self.maptext = AAV_Gui:createPlayerFrame(self, bracket)
+		self.origin, self.player, self.maptext, self.replayButton, self.playButton = AAV_Gui:createPlayerFrame(self, bracket)
 		self.detail = AAV_Gui:createButtonDetail(self.origin)
-		self.playButton = AAV_Gui:createButtonPlay(self.origin)
-		self.replayButton = AAV_Gui:createButtonReplay(self.origin)
 		self.hackInfo = AAV_Gui:createInformationHack(self.detail)
 		self.seeker = {}
 		self.seeker.bar, self.seeker.back, self.seeker.slide, self.seeker.speedval, self.seeker.speed = AAV_Gui:createSeekerBar(self.player, elapsed)
@@ -730,7 +728,6 @@ function AAV_PlayStub:createPlayer(bracket, elapsed)
 		end)
 		
 		-- PAUSE
-		self.playButton:SetText("Pause")
 		self.playButton:SetScript("OnClick", function() 
 			self.isPlayOn = not self.isPlayOn
 			
@@ -753,15 +750,12 @@ function AAV_PlayStub:createPlayer(bracket, elapsed)
 			
 			if (self.viewdetail) then
 				self.player:Show()
-				self.playButton:Show()
-				self.replayButton:Show()
 				self.detail:SetText(L.VIEW_STATS)
+				if(self.isCdHacking) then self.hackInfo:Show() end
 				self.stats:Hide()
 				-- go timer
 			else
 				self.player:Hide()
-				self.playButton:Hide()
-				self.replayButton:Hide()
 				self.detail:SetText(L.VIEW_MATCH)
 				if(self.isCdHacking) then self.hackInfo:Hide() end
 				self.stats:Show()

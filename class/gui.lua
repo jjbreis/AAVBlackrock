@@ -13,13 +13,13 @@ function AAV_Gui:createPlayerFrame(obj, bracket)
 	end
 	
 	currentPlayerObject = obj -- Fix this later (TODO)
-
+	-- ROOT FRAME
 	local o = CreateFrame("Frame", "Root", UIParent)
 	o:SetFrameStrata("HIGH")
 	o:SetWidth(560)
 	o:SetPoint("Center", 0, 0)
 	self:setPlayerFrameSize(o, bracket)
-	
+	--MATCH PLAYER
 	local f = CreateFrame("Frame", "MatchPlayer", o)
 	f:SetFrameStrata("HIGH")
 	f:SetWidth(560)
@@ -27,10 +27,8 @@ function AAV_Gui:createPlayerFrame(obj, bracket)
 	currentPlayerFrame = f:GetParent() -- Fix this later (TODO)
 	self:setPlayerFrameSize(f, bracket)
 	
-	--f:SetPoint("CENTER",0,0)
 	o:SetBackdrop({
 	  bgFile="Interface\\DialogFrame\\UI-DialogBox-Background",
-	  --edgeFile="Interface\\Tooltips\\UI-Tooltip-Border", 
 	  edgeFile="Interface\\DialogFrame\\UI-DialogBox-Border",
 	  tile=1, tileSize=10, edgeSize=10, 
 	  insets={left=3, right=3, top=3, bottom=3}
@@ -58,8 +56,6 @@ function AAV_Gui:createPlayerFrame(obj, bracket)
 	mt:SetPoint("CENTER", m, 0, 0)
 	mt:Show()
 	
-	--m:SetWidth(mt:GetStringWidth() + 25)
-	
 	--CLOSE BUTTON
 	local btn = CreateFrame("Button", "PlayerCloseButton", o)
 	btn:SetHeight(32)
@@ -78,20 +74,37 @@ function AAV_Gui:createPlayerFrame(obj, bracket)
 	btn:Show()
 	
 	--BACK BUTTON
-	local backbtn = CreateFrame("Button", "PlayerBackButton", o, "UIPanelButtonTemplate")
+	local backbtn = CreateFrame("Button", "PlayerBackButton", f, "UIPanelButtonTemplate")
 	backbtn:SetHeight(25)
 	backbtn:SetWidth(40)
 	backbtn:SetText("Back")
-	backbtn:SetPoint("TOPLEFT" , o, "TOPLEFT", 5, -5)
+	backbtn:SetPoint("TOPLEFT" , o, "TOPLEFT", 7, -7)
 	backbtn:SetScript("OnClick", function (s, b, d)
-		obj:hidePlayer(s:GetParent())
+		obj:hidePlayer((s:GetParent()):GetParent())
 		obj:hideMovingObjects()
 		obj:setOnUpdate("stop")
 		AAV_TableGui:showMatchesFrame()
 	end)
 	backbtn:Show()
 	
-	return o, f, mt
+	--REPLAY BUTTON
+	local replay = CreateFrame("BUTTON", "$parentViewreplay", f, "UIPanelButtonTemplate")
+	replay:SetPoint("BOTTOMRIGHT", -190, 15)
+	replay:SetWidth(125)
+	replay:SetHeight(25)
+	replay:Show()
+	replay:SetText("Replay from 0.00")
+	
+	--PAUSE BUTTON
+	local pause = CreateFrame("BUTTON", "$parentPlayButton", f, "UIPanelButtonTemplate")
+	pause:SetPoint("BOTTOMLEFT", 10, 70)
+	pause:SetWidth(38)
+	pause:SetHeight(25)
+	pause:SetText("Pause")
+	pause:Show()
+	
+	
+	return o, f, mt, replay, pause
 end
 
 function AAV_Gui:setPlayerFrameSize(frame, bracket)
@@ -454,27 +467,6 @@ function AAV_Gui:createButtonDetail(parent)
 	detail:Show()
 	
 	return detail
-end
-function AAV_Gui:createButtonPlay(parent)
-	
-	local pause = CreateFrame("BUTTON", "$parentPlayButton", parent, "UIPanelButtonTemplate")
-	pause:SetPoint("BOTTOMLEFT", parent, 10, 70)
-	pause:SetWidth(38)
-	pause:SetHeight(25)
-	pause:Show()
-
-	return pause
-end
-function AAV_Gui:createButtonReplay(parent)
-	
-	local replay = CreateFrame("BUTTON", "$parentViewreplay", parent, "UIPanelButtonTemplate")
-	replay:SetPoint("BOTTOMRIGHT", -190, 15)
-	replay:SetWidth(125)
-	replay:SetHeight(25)
-	replay:Show()
-	replay:SetText("Replay from 0.00")
-	
-	return replay
 end
 
 function AAV_Gui:createTeamHead(parent)
