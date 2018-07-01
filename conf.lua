@@ -11,10 +11,7 @@ SlashCmdList["ATROXARENAVIEWER"] = function(msg)
 	
 	print("> /aav " .. msg)
 	
-	if (msg == "lookup") then
-		atroxArenaViewer:lookup()	
-		
-	elseif (msg == "import") then
+	if (msg == "import") then
 		StaticPopup_Show("AAV_IMPORT_DIALOG")
 		
 	elseif (msg == "ui") then

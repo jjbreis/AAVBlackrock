@@ -1056,6 +1056,22 @@ function AAV_Gui:createMinimapIcon(parent, player)
 					end
 					
 					UIDropDownMenu_AddButton(info, level)
+					
+					reset(info)
+					info.notCheckable = true
+					info.notClickable = true
+					info.text = ""
+					
+					UIDropDownMenu_AddButton(info, level)
+					
+					reset(info)
+					info.text       = "Slider Options"
+					info.notCheckable = true
+					info.notClickable = false
+					info.hasArrow	= true
+					info.func = function() InterfaceOptionsFrame_OpenToCategory("AAVBlackrock") end
+					
+					UIDropDownMenu_AddButton(info, level)
 
 			elseif (UIDROPDOWNMENU_MENU_VALUE == "Export Match") then	
 			

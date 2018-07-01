@@ -8,6 +8,9 @@ Jammin#8283 on discord for any problems
 atroxArenaViewer = LibStub("AceAddon-3.0"):NewAddon("atroxArenaViewer", "AceComm-3.0", "AceEvent-3.0", "AceTimer-3.0", "AceSerializer-3.0")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("atroxArenaViewer", false)
+local AceConfig = LibStub("AceConfig-3.0")
+local AceConfigDialog = LibStub("AceConfigDialog-3.0")
+
 
 local libS = LibStub:GetLibrary("AceSerializer-3.0")
 local libC = LibStub:GetLibrary("LibCompress")
@@ -140,10 +143,11 @@ function atroxArenaViewer:OnInitialize()
 				manabartexture = "oCB",
 				healthdisplay = 3, -- deficit percentage
 				shortauras = true, -- don't exceed debuff buff bar
+				slidercds = AAV_CDSKILLS,
 			}
 		}
-
 	}
+	
 	atroxArenaViewerData.current = {
 		inArena = false,
 		inFight = false,
@@ -159,12 +163,125 @@ function atroxArenaViewer:OnInitialize()
     
     print("|cffe392c5<AAV Blackrock Version>|r v"..AAV_VERSIONMAJOR.."."..AAV_VERSIONMINOR.."."..AAV_VERSIONBUGFIX.. " " .. L.AAV_LOADED)
 
+	
     
     self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
     self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS")
 	self:RegisterEvent("CHAT_MSG_ADDON")
 	self:RegisterEvent("CHAT_MSG_SYSTEM")
     
+	--OPTIONS
+	local options = {
+	type = "group",
+	name = "AAVBlackrock",
+	args = {
+		spellauraApplied = {
+					type = 'group',
+					name = "Slider Options",
+					desc = "Options for the slider when replaying a game",
+					set = setOption,
+					get = getOption,
+					order = 2,
+					args = {
+						header = {
+							type = 'header',
+							name = "Slider Cooldowns",
+							order = 1,
+						},
+						general = {
+							type = 'group',
+							inline = true,
+							name = "General spells",
+							order = 2,
+							args = {
+								trinket = {
+									type = 'toggle',
+									name = SpellTexture(42292).."PvP Trinket/Every Man for Himself",
+									desc = function ()
+										GameTooltip:SetHyperlink(GetSpellLink(42292));
+									end,
+									descStyle = "custom",
+									order = 1,
+								},
+							}
+						},
+						druid = {
+							type = 'group',
+							inline = true,
+							name = "|cffFF7D0ADruid|r",
+							order = 4,
+							args = getArgs({61336,50334,53312,22812,17116,22842,29166,33357}),
+						},
+						paladin = {
+							type = 'group',
+							inline = true,
+							name = "|cffF58CBAPaladin|r",
+							order = 7,
+							args = getArgs({498,64205,1044,642,10278,6940,10308,31884,54428,20216,31821,20066}),
+						},
+						rogue = {
+							type = 'group',
+							inline = true,
+							name = "|cffFFF569Rogue|r",
+							order = 9,
+							args = getArgs({1766,51722,2094,14185,26669,8643,11305,26889,31224,57934,14177,13877,13750,51690,51713,36554}),
+						},
+						warrior	= {
+							type = 'group',
+							inline = true,
+							name = "|cffC79C6EWarrior|r",
+							order = 12,
+							args = getArgs({72,2565,676,20230,5246,871,18499,1719,23920,3411,55694,46924,12975,46968}),
+						},
+						priest	= {
+							type = 'group',
+							inline = true,
+							name = "|cffFFFFFFPriest|r",
+							order = 8,
+							args = getArgs({6346,10890,34433,48173,64843,64901,48158,33206,10060,14751,47585,15487,64044}),
+						},
+						shaman	= {
+							type = 'group',
+							inline = true,
+							name = "|cff0070DEShaman|r",
+							order = 10,
+							args = getArgs({8177,32182,2825,51514,58582,59159,16166,51533,30823,16188,16190,57994}),
+						},
+						mage = {
+							type = 'group',
+							inline = true,
+							name = "|cff69CCF0Mage|r",
+							order = 6,
+							args = getArgs({12051,1953,45438,2139,66,42917,43012,42945,43039,55342,12043,11129,44572,31687,11958,12472}),
+						},
+						dk	= {
+							type = 'group',
+							inline = true,
+							name = "|cffC41F3BDeath Knight|r",
+							order = 3,
+							args = getArgs({47476,48707,51052,48792,48743,47568,49028,49016,49039,49203,51271,49206}),
+						},
+						hunter = {
+							type = 'group',
+							inline = true,
+							name = "|cffABD473Hunter|r",
+							order = 5,
+							args = getArgs({781,3045,5384,19263,53271,60192,14311,13809,49012,19503,23989,34490,19577,19574}),
+						},
+						warlock = {
+							type = 'group',
+							inline = true,
+							name = "|cff9482C9Warlock|r",
+							order = 11,
+							args = getArgs({17928,54785,50589,47860,48020,18708,59672,17962,59172}),
+						},
+					},
+				},
+			}
+}
+	AceConfig:RegisterOptionsTable("AAVBlackrock_options", options)
+	AceConfigDialog:AddToBlizOptions("AAVBlackrock_options", "AAVBlackrock")
+
 end
 
 function atroxArenaViewer:changeRecording()
@@ -1060,4 +1177,58 @@ function atroxArenaViewer:importMatch(encoded)
 	end
 	print("|cffe392c5<AAV>|r ERROR - String is corrupted or invalid")
 	return
+end
+--OPTION FUNCTIONS
+function getArgs(spellList)
+	local args = {}
+	for k,v in pairs(spellList) do
+		if (AAV_CDSTONAMES[v]) then
+			print(k.." "..v)
+			rawset(args, AAV_CDSTONAMES[v], spellArg(k, v))
+		else
+			print("Doesnt exist"..v)
+		end
+	end
+	return args
+end
+function spellArg(order, spellID, ...)
+	local spellname,_,icon = GetSpellInfo(spellID)
+	print (spellname)
+	if spellname ~= nil then
+	return {
+		type = 'toggle',
+		name = "\124T"..icon..":24\124t"..spellname,							
+		desc = function () 
+			GameTooltip:SetHyperlink(GetSpellLink(spellID));
+		end,
+		descStyle = "custom",
+		order = order,
+	}
+	end
+end
+function setOption(info, value)
+	local name = info[#info]
+	for k,v in pairs(AAV_CDSTONAMES) do
+		if(name == v) then
+			atroxArenaViewerData.defaults.profile.slidercds[k] = value
+		end
+	end
+end
+
+function getOption(info)
+	local name = info[#info]
+	local val = false
+	for k,v in pairs(AAV_CDSTONAMES) do
+		if(name == v) then
+			val = atroxArenaViewerData.defaults.profile.slidercds[k]
+		end
+	end
+	return val
+end
+
+function SpellTexture(sid)
+	local spellname,_,icon = GetSpellInfo(sid)
+	if spellname ~= nil then
+		return "\124T"..icon..":24\124t"
+	end
 end

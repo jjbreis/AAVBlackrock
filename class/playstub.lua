@@ -1005,7 +1005,7 @@ function AAV_PlayStub:createIndex()
 					end
 					
 					--For slider CDS				
-					if (AAV_CDSKIlLS[tonumber(s[5])] and tonumber(s[5])) then
+					if (tonumber(s[5]) and atroxArenaViewerData.defaults.profile.slidercds[tonumber(s[5])] == true ) then
 						self.cdlist[tonumber(s[1])] = {}
 						self.cdlist[tonumber(s[1])][s[5]] = id
 					end

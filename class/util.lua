@@ -4,6 +4,172 @@ AAV_Util.__index = AAV_Util
 ----
 -- skills will be shown additionally on the player's icon frame.
 -- credits: gladius
+AAV_CDSTONAMES = {
+	-- WARRIOR
+	[2687]	= "Bloodrage",
+	[72]	= "Shield Bash",
+	[2565]	= "Shield Block",
+	[676]	= "Disarm",
+	[20230]	= "Retaliation",
+	[5246]	= "Intimidating Shout",
+	[871]	= "Shield Wall",
+	[18499]	= "Berserker Rage",
+	[6552]	= "Pummel",
+	[1719]	= "Recklessness",
+	[23920]	= "Spell Reflection",
+	[3411]	= "Intervene",
+	[55694]	= "Enraged Regeneration",
+	[46924]	= "Bladestorm",
+	[12975]	= "Last Stand",
+	[46968]	= "Shockwave",
+
+	-- Priest
+	[6346]	= "Fear Ward",
+	[10890]	= "Psychic Scream",
+	[34433]	= "Shadowfiend",
+	[48173]	= "Desperate Prayer",
+	[64843]	= "Divine Hymn",
+	[64901]	= "Hymn of Hope",
+	[48158]	= "Shadow Word: Death",
+	[33206]	= "Pain Suppression",
+	[10060]	= "Power Infusion",
+	[14751]	= "Inner Focus",
+	[47585]	= "Dispersion",
+	[15487]	= "Silence",
+	[64044]	= "Psychic Horror",
+	
+	-- DRUID
+	[61336]	= "Survival Instincts",
+	[50334]	= "Berserk",
+	[53312]	= "Nature's Grasp",
+	[22812]	= "Barkskin",
+	[17116]	= "Nature's Swiftness",
+	[8983]	= "Bash",
+	[22842]	= "Frenzied Regeneration",
+	[29166]	= "Innervate",
+	[33357]	= "Dash",
+	[53201]	= "Starfall",
+	[61384]	= "Typhoon",
+	[33831]	= "Force of Nature",
+
+	-- WARLOCK
+	[17928]	= "Howl of Terror",
+	[54785]	= "Demon Charge",
+	[50589]	= "Immolation Aura",
+	[47860]	= "Death Coil",
+	[48020]	= "Demonic Circle: Teleport",
+	[47847]	= "Shadowfury",
+	[18708]	= "Fel Domination",
+	[59672]	= "Metamorphosis",
+	[17962]	= "Conflagrate",
+	[59172]	= "Chaos Bolt",
+
+	-- MAGE
+	[12051]	= "Evocation",
+	[1953]	= "Blink",
+	[45438]	= "Ice Block",
+	[2139]	= "Counterspell",
+	[66]	= "Invisibility",
+	[42917]	= "Frost Nova",
+	[43012]	= "Frost Ward",
+	[43010]	= "Fire Ward",
+	[42945]	= "Blast Wave",
+	[42950]	= "Dragon's Breath",
+	[43039]	= "Ice Barrier",
+	[55342]	= "Mirror Image",
+	[12043]	= "Presence of Mind",
+	[12042]	= "Arcane Power",
+	[11129]	= "Combustion",
+	[44572]	= "Deep Freeze",
+	[31687]	= "Summon Water Elemental",
+	[11958]	= "Cold Snap",
+	[12472]	= "Icy Veins",
+	
+	-- PALADIN
+	[498] 	= "Divine Protection",
+	[64205] = "Divine Sacrifice",
+	[1044] 	= "Hand of Freedom",
+	[1038] 	= "Hand of Salvation",
+	[642] 	= "Divine Shield",
+	[10278] = "Hand of Protection",
+	[6940] 	= "Hand of Sacrifice",
+	[10308] = "Hammer of Justice",
+	[31884] = "Avenging Wrath",
+	[54428] = "Divine Plea",
+	[20216] = "Divine Favor",
+	[31842] = "Divine Illumination",
+	[31821] = "Aura Mastery",
+	[20066] = "Repentance",
+	
+	-- HUNTER
+	[781]	= "Disengage",
+	[3045]	= "Rapid Fire",
+	[5384]	= "Feign Death",
+	[19263]	= "Deterrence",
+	[53271]	= "Master's Call",
+	[60192]	= "Freezing Arrow",
+	[14311]	= "Freezing Trap",
+	[13809]	= "Frost Trap",
+	[49012]	= "Wyvern Sting",
+	[19503]	= "Scatter Shot",
+	[23989]	= "Readiness",
+	[34490]	= "Silencing Shot",
+	[19577]	= "Intimidation",
+	[19574]	= "Bestial Wrath",
+	
+	-- DEATHKNIGHT
+	[49576]	= "Death Grip",
+	[47476]	= "Strangulate",
+	[48707]	= "Anti-Magic Shell",
+	[51052]	= "Anti-Magic Zone",
+	[48792]	= "Icebound Fortitude",
+	[48743]	= "Death Pact",
+	[47568]	= "Empower Rune Weapon",
+	[49028]	= "Dancing Rune Weapon",
+	[49016]	= "Hysteria",
+	[49039]	= "Lichborne",
+	[49203]	= "Hungering Cold",
+	[51271]	= "Unbreakable Armor",
+	[49206]	= "Summon Gargoyle",
+	
+	-- ROGUE
+	[1766]	= "Kick",
+	[51722] = "Dismantle",
+	[2094]	= "Blind",
+	[26669] = "Evasion",
+	[8643]	= "Kidney Shot",
+	[11305] = "Sprint",
+	[26889] = "Vanish",
+	[31224] = "Cloak of Shadows",
+	[57934] = "Tricks of the Trade",
+	[14177] = "Cold Blood",
+	[13877] = "Blade Flurry",
+	[13750] = "Adrenaline Rush",
+	[51690] = "Killing Spree",
+	[51713] = "Shadow Dance",
+	[14185] = "Preparation",
+	[36554] = "Shadow Step",
+	
+	-- SHAMAN
+	[57994] = "Wind Shear",
+	[8177] 	= "Grounding Totem",
+	[32182] = "Heroism",
+	[2825] 	= "Bloodlust",
+	[51514] = "Hex",
+	[58582] = "Stoneclaw Totem",
+	[59159] = "Thunderstorm",
+	[16166] = "Elemental Mastery",
+	[51533] = "Feral Spirit",
+	[30823] = "Shamanistic Rage",
+	[16188] = "Nature's Swiftness",
+	[16190] = "Mana Tide Totem",
+	
+	-- GENERAL
+	[59752]	= "trinket",
+	[42292]	= "trinket",
+}
+---
+--
 AAV_IMPORTANTSKILLS = {
 	[33786] = 3, 	-- Cyclone
 	[18658] = 3,	-- Hibernate
@@ -90,7 +256,7 @@ AAV_IMPORTANTSKILLS = {
 AAV_CCSKILS = {
 	
 	-- WARRIOR
-	[2678]	= 60,	-- Bloodrage
+	[2687]	= 60,	-- Bloodrage
 	[72]	= 12,	-- Shield Bash
 	[2565]	= 60,	-- Shield Block
 	[676]	= 60,	-- Disarm
@@ -295,12 +461,172 @@ AAV_CHEATSKILS = {
 	[48825] = 5, 	-- Holy Shock
 	[47486]	= 5,	-- Mortal Strike
 }
-
 ----
 --
-AAV_CDSKIlLS = {
 
+AAV_CDSKILLS = {
 	-- WARRIOR
+	[2687]	= false,	-- Bloodrage
+	[72]	= false,	-- Shield Bash
+	[2565]	= false,	-- Shield Block
+	[676]	= false,	-- Disarm
+	[20230]	= false,	-- Retaliation
+	[5246]	= false,	-- Intimidating Shout
+	[871]	= true,	-- Shield Wall
+	[18499]	= false,	-- Berserker Rage
+	[6552]	= false,	-- Pummel
+	[1719]	= false, -- Recklessness
+	[23920]	= false,	-- Spell Reflection
+	[3411]	= false,	-- Intervene
+	[55694]	= false,	-- Enraged Regeneration
+	[46924]	= true,	-- Bladestorm
+	[12975]	= false,	-- Last Stand
+	[46968]	= false,	-- Shockwave
+
+	-- Priest
+	[6346]	= false,	-- Fear Ward
+	[10890]	= false,	-- Psychic Scream
+	[34433]	= false,	-- Shadowfiend
+	[48173]	= false,	-- Desperate Prayer
+	[64843]	= false,	-- Divine Hymn
+	[64901]	= false,	-- Hymn of Hope
+	[48158]	= false,	-- Shadow Word: Death
+	[33206]	= true,		-- Pain Suppression
+	[10060]	= false,	-- Power Infusion
+	[14751]	= false,	-- Inner Focus
+	[47585]	= true,		-- Dispersion
+	[15487]	= false,	-- Silence
+	[64044]	= false,	-- Psychic Horror
+	
+	-- DRUID
+	[61336]	= true,		-- Survival Instincts
+	[50334]	= true,		-- Berserk
+	[53312]	= false,	-- Nature's Grasp
+	[22812]	= true,		-- Barkskin
+	[17116]	= true,		-- Nature's Swiftness
+	[8983]	= false,	-- Bash
+	[22842]	= false,	-- Frenzied Regeneration
+	[29166]	= false,	-- Innervate
+	[33357]	= false,	-- Dash
+	[53201]	= false,	-- Starfall
+	[61384]	= false,	-- Typhoon
+	[33831]	= false,	-- Force of Nature
+
+	-- WARLOCK
+	[17928]	= false,	-- Howl of Terror
+	[54785]	= false,	-- Demon Charge
+	[50589]	= false,	-- Immolation Aura
+	[47860]	= true,		-- Death Coil
+	[48020]	= false,	-- Demonic Circle: Teleport
+	[47847]	= false,	-- Shadowfury
+	[18708]	= true,		-- Fel Domination
+	[59672]	= true,		-- Metamorphosis
+	[17962]	= false,	-- Conflagrate
+	[59172]	= false,	-- Chaos Bolt
+
+	-- MAGE
+	[12051]	= true,	-- Evocation
+	[1953]	= false,	-- Blink
+	[45438]	= true,		-- Ice Block
+	[2139]	= false,	-- Counterspell
+	[66]	= false,	-- Invisibility
+	[42917]	= false,	-- Frost Nova
+	[43012]	= false,	-- Frost Ward
+	[43010]	= false,	-- Fire Ward
+	[42945]	= false,	-- Blast Wave
+	[42950]	= false,	-- Dragon's Breath
+	[43039]	= false,	-- Ice Barrier
+	[55342]	= false,	-- Mirror Image
+	[12043]	= false,	-- Presence of Mind
+	[12042]	= false,	-- Arcane Power
+	[11129]	= false,	-- Combustion
+	[44572]	= false,	-- Deep Freeze
+	[31687]	= false,	-- Summon Water Elemental
+	[11958]	= false,		-- Cold Snap
+	[12472]	= true,		-- Icy Veins
+	
+	-- PALADIN
+	[498] 	= false, 	-- Divine Protection
+	[64205] = false, 	-- Divine Sacrifice
+	[1044] 	= false, 	-- Hand of Freedom
+	[642] 	= true, 	-- Divine Shield
+	[10278] = true, 	-- Hand of Protection
+	[6940] 	= false, 	-- Hand of Sacrifice
+	[10308] = false, 	-- Hammer of Justice
+	[31884] = true, 	-- Avenging Wrath
+	[54428] = false, 	-- Divine Plea
+	[20216] = false, 	-- Divine Favor
+	[31821] = false, 	-- Aura Mastery
+	[20066] = false, 	-- Repentance
+	
+	-- HUNTER
+	[781]	= false,	-- Disengage
+	[3045]	= true,		-- Rapid Fire
+	[5384]	= false,	-- Feign Death
+	[19263]	= true,		-- Deterrence
+	[53271]	= false,	-- Master's Call
+	[60192]	= false,	-- Freezing Arrow
+	[14311]	= false,	-- Freezing Trap
+	[13809]	= false,	-- Frost Trap
+	[49012]	= false,	-- Wyvern Sting
+	[19503]	= false,	-- Scatter Shot
+	[23989]	= false,	-- Readiness
+	[34490]	= false,	-- Silencing Shot
+	[19577]	= false,	-- Intimidation
+	[19574]	= false,	-- Bestial Wrath
+	
+	-- DEATHKNIGHT
+	[49576]	= false,	-- Death Grip
+	[47476]	= true,	-- Strangulate
+	[48707]	= false,	-- Anti-Magic Shell
+	[51052]	= false,	-- Anti-Magic Zone
+	[48792]	= false,	-- Icebound Fortitude
+	[48743]	= false,	-- Death Pact
+	[47568]	= false,	-- Empower Rune Weapon
+	[49028]	= false,	-- Dancing Rune Weapon
+	[49016]	= false,	-- Hysteria
+	[49039]	= false,	-- Lichborne
+	[49203]	= false,	-- Hungering Cold
+	[51271]	= false,	-- Unbreakable Armor
+	[49206]	= true,	-- Summon Gargoyle
+	
+	-- ROGUE
+	[1766]	= false,	-- Kick
+	[51722] = false,	-- Dismantle
+	[2094]	= true,		-- Blind
+	[26669] = false,	-- Evasion
+	[8643]	= false,	-- Kidney Shot
+	[11305] = false,	-- Sprint
+	[26889] = false,	-- Vanish
+	[31224] = false,	-- Cloak of Shadows
+	[57934] = false,	-- Tricks of the Trade
+	[14177] = false,	-- Cold Blood
+	[13877] = false,	-- Blade Flurry
+	[13750] = false,	-- Adrenaline Rush
+	[51690] = false,	-- Killing Spree
+	[51713] = true,	-- Shadow Dance
+	[14185] = false,	-- Preparation
+	[36554] = false,	-- Shadow Step
+	
+	-- SHAMAN
+	[57994] = false,	-- Wind Shear
+	[8177] 	= false,	-- Grounding Totem
+	[32182] = true,	-- Heroism
+	[2825] 	= true,	-- Bloodlust
+	[51514] = false,	-- Hex
+	[58582] = false,	-- Stoneclaw Totem
+	[59159] = false,	-- Thunderstorm
+	[16166] = true,	-- Elemental Mastery
+	[51533] = false,	-- Feral Spirit
+	[30823] = true,	-- Shamanistic Rage
+	[16188] = true,	-- Nature's Swiftness
+	[16190] = false,	-- Mana Tide Totem
+	
+	-- GENERAL
+	[59752]	= true,	-- Every Man for Himself
+	[42292]	= true,	-- PvP Trinket
+	
+	--[[ --WARRIOR
 	[871]	= 300,	-- Shield Wall
 	[46924]	= 75,	-- Bladestorm
 
@@ -346,7 +672,8 @@ AAV_CDSKIlLS = {
 	
 	-- GENERAL
 	[59752]	= 120,	-- Every Man for Himself
-	[42292]	= 120,	-- PvP Trinket
+	[42292]	= 120,	-- PvP Trinket 
+	]]--
 }
 ---
 -- skills that are only visible as buffs, but should create a skill used.
