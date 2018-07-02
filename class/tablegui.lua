@@ -205,8 +205,9 @@ function AAV_TableGui:fillMatchesTable()
 			end
 			data[row].cols = {};
 			
-			local startTime, elapsedStr, mapname, TeamUm, matchUp,TeamDois, matchResult, teamOneRating, replay = self:determineMatchSummary(row)
-			
+			local startTime, elapsedStr, mapname, TeamUm, matchUp,TeamDois, matchResult, teamOneRating, replay, cheatDetected = self:determineMatchSummary(row)
+			if(cheatDetected == 1) then	TeamDois = TeamDois.."   \124TInterface\\FriendsFrame\\InformationIcon:22\124t" end
+
 			data[row].cols[1] = { ["value"] = startTime };
 			data[row].cols[2] = { ["value"] = elapsedStr };
 			data[row].cols[3] = { ["value"] = mapname };
@@ -249,6 +250,7 @@ function AAV_TableGui:determineMatchSummary(num)
 	local startTime = atroxArenaViewerData.data[num]["startTime"]
 	local elapsed = atroxArenaViewerData.data[num].elapsed
 	local replay = atroxArenaViewerData.data[num].replay
+	local cheatDetected = atroxArenaViewerData.data[num].cheatDetected
 	local healersList = {a = true, b = true, c = true}
 	
 	formatTime = function(time, s)
@@ -331,7 +333,7 @@ function AAV_TableGui:determineMatchSummary(num)
 	matchUp = "  vs  "
 	TeamUm = sortNames(teamOne)
 	TeamDois = sortNames(teamTwo)
-	return startTime, elapsedStr, mapname, TeamUm or "?", matchUp or "?", TeamDois or "?", matchResult or "Lost", teamOneRating, replay or "?"
+	return startTime, elapsedStr, mapname, TeamUm or "?", matchUp or "?", TeamDois or "?", matchResult or "Lost", teamOneRating, replay or "?", cheatDetected
 end
 
 ----

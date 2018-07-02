@@ -14,6 +14,7 @@ function AAV_MatchStub:new()
 	self.result = 0 -- 0 = unknown, 1 = win, 2 = loss, 3 = draw
 	self.server = GetRealmName()
 	self.replay = 0
+	self.cheatDetected = 0
 	self.combatans = {
 		dudes = {}
 	}
@@ -256,6 +257,9 @@ end
 
 function AAV_MatchStub:setReplay(id)
 	self.replay = id;
+end
+function AAV_MatchStub:setCheatDetection(isCheatDetected)
+	self.cheatDetected = isCheatDetected;
 end
 ----
 -- creates a message and saves it.

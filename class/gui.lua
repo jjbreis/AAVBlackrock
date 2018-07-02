@@ -1065,6 +1065,35 @@ function AAV_Gui:createMinimapIcon(parent, player)
 					UIDropDownMenu_AddButton(info, level)
 					
 					reset(info)
+					info.text = "Cheat Detector"
+					info.notCheckable = true
+					info.notClickable = true
+					info.hasArrow = false
+					info.func = nil
+					info.r = 0.8901960784313725
+					info.g = 0.5725490196078431
+					info.b = 0.7725490196078431
+					
+					UIDropDownMenu_AddButton(info, level)
+					
+					reset(info)
+					info.text       = "Announce Cheaters in /say"
+					info.notCheckable = false
+					info.notClickable = false
+					info.hasArrow	= false
+					info.checked = atroxArenaViewerData.defaults.profile.announceCheaters
+					info.func = function() atroxArenaViewerData.defaults.profile.announceCheaters = not atroxArenaViewerData.defaults.profile.announceCheaters end
+					
+					UIDropDownMenu_AddButton(info, level)
+					
+					reset(info)
+					info.notCheckable = true
+					info.notClickable = true
+					info.text = ""
+					
+					UIDropDownMenu_AddButton(info, level)
+					
+					reset(info)
 					info.text       = "Slider Options"
 					info.notCheckable = true
 					info.notClickable = false

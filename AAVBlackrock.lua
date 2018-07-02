@@ -27,6 +27,10 @@ local tempdebuffs = {} -- used for determining new debuffs
 local exceptauras = { -- these auras won't be tracked
 	32727,	-- Arena Preparation
 }
+--Anticheat variables
+local lastcdused = {}
+local diff = 0
+
 
 -------------------------
 -- GLOBALS
@@ -144,6 +148,7 @@ function atroxArenaViewer:OnInitialize()
 				healthdisplay = 3, -- deficit percentage
 				shortauras = true, -- don't exceed debuff buff bar
 				slidercds = AAV_CDSKILLS,
+				announceCheaters = true,
 			}
 		}
 	}
@@ -175,7 +180,7 @@ function atroxArenaViewer:OnInitialize()
 	type = "group",
 	name = "AAVBlackrock",
 	args = {
-		spellauraApplied = {
+		SliderBarCooldowns = {
 					type = 'group',
 					name = "Slider Options",
 					desc = "Options for the slider when replaying a game",
@@ -281,6 +286,8 @@ function atroxArenaViewer:OnInitialize()
 }
 	AceConfig:RegisterOptionsTable("AAVBlackrock_options", options)
 	AceConfigDialog:AddToBlizOptions("AAVBlackrock_options", "AAVBlackrock")
+	
+
 
 end
 
@@ -427,6 +434,13 @@ function atroxArenaViewer:ZONE_CHANGED_NEW_AREA(event, unit)
 		atroxArenaViewerData.current.time = GetTime()
 		
 		M = AAV_MatchStub:new()
+		--Reset lastcdused & diff
+		lastcdused = {}
+		for a, b in pairs  (AAV_CHEATSKILS) do
+			lastcdused[a] = {}
+		end
+		diff = 0
+		
 		self:RegisterEvent("ARENA_OPPONENT_UPDATE")
 		
 	else --save match
@@ -711,7 +725,7 @@ end
 function atroxArenaViewer:COMBAT_LOG_EVENT_UNFILTERED(event, ...)
 	local timestamp, type, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical = select(1, ...)
 	local eventType, msg
-	
+
 	local source = M:getGUIDtoNumber(sourceGUID)
 	local dest = M:getGUIDtoNumber(destGUID)
 	if (not absorbed) then absorbed = 0 end
@@ -774,9 +788,31 @@ function atroxArenaViewer:COMBAT_LOG_EVENT_UNFILTERED(event, ...)
 		if (source) then
 			if (not dest) then dest = -1 end
 			local time = 0
+			local theTime = self:getDiffTime()
+			local isCdHacking = 0
+			-- ANTICHEAT CDHACK
+			if (AAV_CHEATSKILS[spellId]) then 
+				if (not lastcdused[tonumber(spellId)][source]) then lastcdused[tonumber(spellId)][source] = 0 end
+				diff = tonumber(theTime) - lastcdused[spellId][source]
+				if (diff < AAV_CCSKILS[tonumber(spellId)] and lastcdused[tonumber(spellId)][source] ~= 0) then
+					if (atroxArenaViewerData.defaults.profile.announceCheaters) then
+						local spellname = GetSpellInfo(spellId)
+						SendChatMessage("CHEAT DETECTED: "..M:getDudesData()[sourceGUID].name.." cast "..spellname.." with a "..diff.." second cooldown, impossible without the use of a CD Hack" ,"SAY")
+					else
+						print("|cFFFF0000<AAV> Cheat Detector Triggered:|r CD Hack - Go to 'Show Stats' after the game to learn more")
+					end
+					isCdHacking = 1				
+
+				end
+				lastcdused[tonumber(spellId)][source] = theTime
+			end
 			GetSpellCooldown(spellId)
-			--M:getGUIDtoTarget(sourceGUID)
-			self:createMessage(self:getDiffTime(), eventType .. "," .. source .. "," .. dest .. "," .. spellId .. "," .. time)
+			if(isCdHacking == 0) then
+				self:createMessage(theTime, eventType .. "," .. source .. "," .. dest .. "," .. spellId .. "," .. time)
+			else
+				self:createMessage(theTime, eventType .. "," .. source .. "," .. dest .. "," .. spellId .. "," .. time..","..isCdHacking)
+				M:setCheatDetection(isCdHacking)
+			end
 		end
 	elseif (type == "SPELL_CAST_FAILED") then
 		-- cant be tracked from others
@@ -1183,7 +1219,6 @@ function getArgs(spellList)
 	local args = {}
 	for k,v in pairs(spellList) do
 		if (AAV_CDSTONAMES[v]) then
-			print(k.." "..v)
 			rawset(args, AAV_CDSTONAMES[v], spellArg(k, v))
 		else
 			print("Doesnt exist"..v)
@@ -1193,7 +1228,6 @@ function getArgs(spellList)
 end
 function spellArg(order, spellID, ...)
 	local spellname,_,icon = GetSpellInfo(spellID)
-	print (spellname)
 	if spellname ~= nil then
 	return {
 		type = 'toggle',

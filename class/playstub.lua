@@ -996,8 +996,8 @@ function AAV_PlayStub:createIndex()
 						if (not lastcdused[tonumber(s[5])][id]) then lastcdused[tonumber(s[5])][id] = 0 end
 						diff = tonumber(s[1]) - lastcdused[tonumber(s[5])][id]
 						if (diff < AAV_CCSKILS[tonumber(s[5])] and lastcdused[tonumber(s[5])][id] ~= 0) then
+							if (self.isCdHacking == false) then print("|cFFFF0000<AAV> Cheat Detector Triggered:|r CD Hack - Click  'Show Stats' to see more") end
 							self.isCdHacking = true
-							print("|cFFFF0000<AAV> Cheat Detector Triggered:|r CD Hack - Click  'Show Stats' to see more")
 							self.cdhack[id] = {}
 							self.cdhack[id][tonumber(s[1])] = diff..";"..tonumber(s[5])
 						end
