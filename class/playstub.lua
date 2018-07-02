@@ -33,6 +33,7 @@ function AAV_PlayStub:new()
 	self.cclist = {} -- used for preventing multiple ccs on same icon
 	self.cdlist = {} -- used to put cds on slider
 	self.cdhack = {}
+	self.idToName = {}
 	
 	----
 	-- these skills won't be shown.
@@ -802,9 +803,9 @@ function AAV_PlayStub:createPlayer(bracket, elapsed)
 			for d,x in pairs(v) do
 			--	print("CD: "..d.." Timestamp: "..k.." ID: "..x)
 				if(bracket <= x) then
-					self.sliderCD[k] = AAV_Gui:createSliderCD(self.seeker.bar, k, d, 0, elapsed)
+					self.sliderCD[k] = AAV_Gui:createSliderCD(self.seeker.bar, k, d, 0, elapsed, self.idToName[x])
 				else
-					self.sliderCD[k] = AAV_Gui:createSliderCD(self.seeker.bar, k, d, 1, elapsed)
+					self.sliderCD[k] = AAV_Gui:createSliderCD(self.seeker.bar, k, d, 1, elapsed, self.idToName[x])
 				end
 			end
 		end
@@ -915,6 +916,7 @@ function AAV_PlayStub:createIndex()
 	self.index = {} -- resets previous indexi
 	self.cdlist = {} --reset previous cclist
 	self.cdhack	= {} --reset previous cdhack list
+	self.idToName = {} --resets previous namelist
 	self.isCdHacking = false
 	
 	for ik,iv in pairs(events) do
@@ -939,6 +941,7 @@ function AAV_PlayStub:createIndex()
 					if (not self.index[iw.ID][0]) then self.index[iw.ID][0] = {} end
 					self.index[iw.ID][0][iv] = ss
 				end
+				self.idToName[iw.ID] = iw.name
 			end
 		end
 	end

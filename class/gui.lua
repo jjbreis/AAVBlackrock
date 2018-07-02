@@ -1237,7 +1237,7 @@ function AAV_Gui:createCC(parent, id)
 	return f, n
 	
 end
-function AAV_Gui:createSliderCD(parent, timestamp, spellID, TeamID, elapsed)
+function AAV_Gui:createSliderCD(parent, timestamp, spellID, TeamID, elapsed, source)
 	local percent = 1
 	local name, rank, icon = GetSpellInfo(spellID)
 	
@@ -1265,6 +1265,16 @@ function AAV_Gui:createSliderCD(parent, timestamp, spellID, TeamID, elapsed)
 	iconframe:SetWidth(16)
 	iconframe:SetHeight(16)
 	iconframe:SetFrameStrata("HIGH")
+	iconframe:EnableMouse(true)
+	iconframe:SetScript("OnEnter", function() 
+		iconframe:SetScript("OnUpdate", function()
+			AAV_Gui:SetGameTooltip(source , 0, iconframe)
+		end)
+	end)
+	iconframe:SetScript("OnLeave", function() 
+		GameTooltip:FadeOut()
+		iconframe:SetScript("OnUpdate", nil)
+	end)
 	
 	--ICON TEXTURE
 	local icontex = iconframe:CreateTexture(nil)
