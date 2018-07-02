@@ -121,7 +121,7 @@ StaticPopupDialogs["AAV_IMPORT_DIALOG"] = {
 		local str = s.editBox:GetText()
 		local finalData = atroxArenaViewer:importMatch(str)
 		if(finalData) then
-		print("|cffe392c5<AAV>|r Sucessfully Exported Match")
+		print("|cffe392c5<AAV>|r Sucessfully Imported Match")
 		local matchid = atroxArenaViewer:getNewMatchID()
 			atroxArenaViewerData.data[matchid] = atroxArenaViewerData.data[matchid] or {}
 			atroxArenaViewerData.data[matchid] = finalData

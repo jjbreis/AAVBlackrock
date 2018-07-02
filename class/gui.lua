@@ -153,7 +153,7 @@ function AAV_Gui:createEntityBar(parent, v, y)
 	
 	
 	-- HEALTH BAR
-	local b = CreateFrame("STATUSBAR", "$parentHealthBar", a)
+	local b = CreateFrame("STATUSBAR", "$parentAAVHealthBar", a)
 	b:SetWidth(135)
 	if (manauser) then b:SetHeight(AAV_GUI_HEALTHBARHEIGHT - AAV_GUI_MANABARHEIGHT) else b:SetHeight(AAV_GUI_HEALTHBARHEIGHT) end
 	b:SetStatusBarTexture("Interface\\Addons\\AAVBlackrock\\res\\" .. atroxArenaViewerData.defaults.profile.hpbartexture .. ".tga")
