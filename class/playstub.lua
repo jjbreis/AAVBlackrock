@@ -943,11 +943,8 @@ function AAV_PlayStub:createIndex()
 		end
 	end
 	
-	local id, event, i, j, lastticktime, diff = 0, 0, 0, 0, 0, 0
-	local buff, debuff, cc, cd, lastcdused = {}, {}, {}, {}, {}
-	for a, b in pairs  (AAV_CHEATSKILS) do
-		lastcdused[a] = {}
-	end
+	local id, event, i, j, lastticktime = 0, 0, 0, 0, 0
+	local buff, debuff, cc, cd = {}, {}, {}, {}
 	--local resetcc = function(c) for k,v in pairs(c) do c.k = nil end end
 	--print(#self.data.data)
 	for k,v in pairs(self.data.data) do
@@ -955,6 +952,7 @@ function AAV_PlayStub:createIndex()
 			s = AAV_Util:split(v, ',')
 			id = tonumber(s[3])
 			event = tonumber(s[2])
+			
 			
 			--resetcc(cc)
 			if (not self.index[id]) then self.index[id] = {} end
@@ -992,16 +990,11 @@ function AAV_PlayStub:createIndex()
 					cd[id][tonumber(s[5])] = AAV_CCSKILS[tonumber(s[5])]
 					
 					--For anticheat
-					if (tonumber(s[6]) and  AAV_CHEATSKILS[tonumber(s[5])] ) then 
-						if (not lastcdused[tonumber(s[5])][id]) then lastcdused[tonumber(s[5])][id] = 0 end
-						diff = tonumber(s[1]) - lastcdused[tonumber(s[5])][id]
-						if (diff < AAV_CCSKILS[tonumber(s[5])] and lastcdused[tonumber(s[5])][id] ~= 0) then
+					if (tonumber(s[7])) then 
 							if (self.isCdHacking == false) then print("|cFFFF0000<AAV> Cheat Detector Triggered:|r CD Hack - Click  'Show Stats' to see more") end
 							self.isCdHacking = true
 							self.cdhack[id] = {}
-							self.cdhack[id][tonumber(s[1])] = diff..";"..tonumber(s[5])
-						end
-					lastcdused[tonumber(s[5])][id] = tonumber(s[1])
+							self.cdhack[id][tonumber(s[1])] = tonumber(s[7])..";"..tonumber(s[5])
 					end
 					
 					--For slider CDS				

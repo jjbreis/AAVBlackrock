@@ -810,7 +810,7 @@ function atroxArenaViewer:COMBAT_LOG_EVENT_UNFILTERED(event, ...)
 			if(isCdHacking == 0) then
 				self:createMessage(theTime, eventType .. "," .. source .. "," .. dest .. "," .. spellId .. "," .. time)
 			else
-				self:createMessage(theTime, eventType .. "," .. source .. "," .. dest .. "," .. spellId .. "," .. time..","..isCdHacking)
+				self:createMessage(theTime, eventType .. "," .. source .. "," .. dest .. "," .. spellId .. "," .. time..","..diff)
 				M:setCheatDetection(isCdHacking)
 			end
 		end
