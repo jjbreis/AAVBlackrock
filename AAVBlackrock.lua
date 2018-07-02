@@ -143,8 +143,6 @@ function atroxArenaViewer:OnInitialize()
 				interval = 0.1,
 				minimapx = -54.6,
 				minimapy = 58.8,
-				hpbartexture = "oCB",
-				manabartexture = "oCB",
 				healthdisplay = 3, -- deficit percentage
 				shortauras = true, -- don't exceed debuff buff bar
 				slidercds = AAV_CDSKILLS,
@@ -761,6 +759,7 @@ end
 function atroxArenaViewer:UNIT_SPELLCAST_CHANNEL_START(event, unit)
 	local spell, rank, displayName, icon, startTime, endTime, isTradeSkill = UnitChannelInfo(unit)	
 	local arenaUnits = {}
+	local time = 0
 	for i=1, 5 do
 		arenaUnits["arena" .. i] = "playerUnit"
 		arenaUnits["arenapet" .. i] = "arena" .. i
@@ -775,7 +774,7 @@ function atroxArenaViewer:UNIT_SPELLCAST_CHANNEL_START(event, unit)
 			if (not destTarget) then destTarget = source end
 			local casttime = (endTime - startTime)
 			local _, duration, _ = GetSpellCooldown(GetSpellInfo(53007))
-			self:createMessage(self:getDiffTime(), eventType .. "," .. source .. "," .. destTarget .. "," .. spellId .. "," .. casttime .. "," .. duration)
+			self:createMessage(self:getDiffTime(), eventType .. "," .. source .. "," .. destTarget .. "," .. spellId .. "," .. time)
 
 	end
 end
