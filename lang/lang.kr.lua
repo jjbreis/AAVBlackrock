@@ -24,6 +24,7 @@ L.CONF_HELP_LINE2				= "ui - 일치하는 재생됩니다."
 L.CONF_HELP_LINE3				= "delete all - 일치하는 포기를 삭제합니다."
 L.CONF_HELP_LINE4				= "기록 - 여부 일치도 기록되지 않습니다."
 L.CONF_HELP_LINE5				= "import"
+L.CONF_HELP_LINE6				= "options - open the options dialog"
 
 L.STATUS						= "상태"
 L.STATUS_IDLE					= "휴식중"

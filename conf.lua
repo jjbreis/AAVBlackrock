@@ -21,11 +21,13 @@ SlashCmdList["ATROXARENAVIEWER"] = function(msg)
 			AAV_TableGui:showMatchesFrame()
 		end
 	
---[[	elseif (msg == "record") then
-		
+	elseif (msg == "record") then
 		self:changeRecording()
 		
-	elseif (msg == "play") then
+	elseif (msg == "options") then
+		InterfaceOptionsFrame_OpenToCategory("AAVBlackrock")
+		
+--[[	elseif (msg == "play") then
 		if (atroxArenaViewerData.data) then
 			print(L.CONF_DESCR_PLAY)
 			for k,v in pairs(atroxArenaViewerData.data) do
@@ -71,6 +73,7 @@ SlashCmdList["ATROXARENAVIEWER"] = function(msg)
 		print(L.CONF_HELP_LINE3)
 		print(L.CONF_HELP_LINE4)
 		print(L.CONF_HELP_LINE5)
+		print(L.CONF_HELP_LINE6)
 
 	end
 	

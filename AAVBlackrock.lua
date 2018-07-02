@@ -177,113 +177,155 @@ function atroxArenaViewer:OnInitialize()
     
 	--OPTIONS
 	local options = {
-	type = "group",
-	name = "AAVBlackrock",
-	args = {
-		SliderBarCooldowns = {
-					type = 'group',
-					name = "Slider Options",
-					desc = "Options for the slider when replaying a game",
-					set = setOption,
-					get = getOption,
-					order = 2,
-					args = {
-						header = {
-							type = 'header',
-							name = "Slider Cooldowns",
-							order = 1,
+		type = "group",
+		name = "AAVBlackrock",
+		args = {
+			GeneralOptions = {
+				type = 'group',
+				--inline = true,
+				name = "General Settings",
+				desc = "General Options for AAV",
+				set = setOption,
+				get = getOption,
+				order = 1,
+				args = {
+					healthdisplay = {
+						type = 'group',
+						inline = true,
+						name = "Health Display",
+						order = 1,
+						args = {
+							healthopt = {
+								type = 'select',
+								name = "Health Options",
+								desc = "Choose the healthbar type you want to see on the player",
+								values = AAV_HEALTHOPTIONS,
+								order = 1,
+							},
 						},
-						general = {
-							type = 'group',
-							inline = true,
-							name = "General spells",
-							order = 2,
-							args = {
-								trinket = {
-									type = 'toggle',
-									name = SpellTexture(42292).."PvP Trinket/Every Man for Himself",
-									desc = function ()
-										GameTooltip:SetHyperlink(GetSpellLink(42292));
-									end,
-									descStyle = "custom",
-									order = 1,
-								},
-							}
-						},
-						druid = {
-							type = 'group',
-							inline = true,
-							name = "|cffFF7D0ADruid|r",
-							order = 4,
-							args = getArgs({61336,50334,53312,22812,17116,22842,29166,33357}),
-						},
-						paladin = {
-							type = 'group',
-							inline = true,
-							name = "|cffF58CBAPaladin|r",
-							order = 7,
-							args = getArgs({498,64205,1044,642,10278,6940,10308,31884,54428,20216,31821,20066}),
-						},
-						rogue = {
-							type = 'group',
-							inline = true,
-							name = "|cffFFF569Rogue|r",
-							order = 9,
-							args = getArgs({1766,51722,2094,14185,26669,8643,11305,26889,31224,57934,14177,13877,13750,51690,51713,36554}),
-						},
-						warrior	= {
-							type = 'group',
-							inline = true,
-							name = "|cffC79C6EWarrior|r",
-							order = 12,
-							args = getArgs({72,2565,676,20230,5246,871,18499,1719,23920,3411,55694,46924,12975,46968}),
-						},
-						priest	= {
-							type = 'group',
-							inline = true,
-							name = "|cffFFFFFFPriest|r",
-							order = 8,
-							args = getArgs({6346,10890,34433,48173,64843,64901,48158,33206,10060,14751,47585,15487,64044}),
-						},
-						shaman	= {
-							type = 'group',
-							inline = true,
-							name = "|cff0070DEShaman|r",
-							order = 10,
-							args = getArgs({8177,32182,2825,51514,58582,59159,16166,51533,30823,16188,16190,57994}),
-						},
-						mage = {
-							type = 'group',
-							inline = true,
-							name = "|cff69CCF0Mage|r",
-							order = 6,
-							args = getArgs({12051,1953,45438,2139,66,42917,43012,42945,43039,55342,12043,11129,44572,31687,11958,12472}),
-						},
-						dk	= {
-							type = 'group',
-							inline = true,
-							name = "|cffC41F3BDeath Knight|r",
-							order = 3,
-							args = getArgs({47476,48707,51052,48792,48743,47568,49028,49016,49039,49203,51271,49206}),
-						},
-						hunter = {
-							type = 'group',
-							inline = true,
-							name = "|cffABD473Hunter|r",
-							order = 5,
-							args = getArgs({781,3045,5384,19263,53271,60192,14311,13809,49012,19503,23989,34490,19577,19574}),
-						},
-						warlock = {
-							type = 'group',
-							inline = true,
-							name = "|cff9482C9Warlock|r",
-							order = 11,
-							args = getArgs({17928,54785,50589,47860,48020,18708,59672,17962,59172}),
+					},
+					shortauras = {
+						type = 'group',
+						inline = true,
+						name = "Buffs and Debuffs",
+						order = 2,
+						args = {
+							aurasopt = {
+								type = 'toggle',
+								name = "Don't Exceed Buffs and Debuffs",
+								width = "double",
+								desc = "Toggle if you want to exceed buffs and debuffs on the player",
+								order = 1,
+							},
 						},
 					},
 				},
-			}
-}
+			},
+			slidercds = {
+				type = 'group',
+				--inline = true,
+				name = "Slider Options",
+				desc = "Options for the slider when replaying a game",
+				set = setOption,
+				get = getOption,
+				order = 2,
+				args = {
+					header = {
+						type = 'header',
+						name = "Slider Cooldowns",
+						order = 1,
+					},
+					general = {
+						type = 'group',
+						inline = true,
+						name = "General spells",
+						order = 2,
+						args = {
+							trinket = {
+								type = 'toggle',
+								name = SpellTexture(42292).."PvP Trinket/Every Man for Himself",
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(42292));
+								end,
+								descStyle = "custom",
+								order = 1,
+							},
+						}
+					},
+					druid = {
+						type = 'group',
+						inline = true,
+						name = "|cffFF7D0ADruid|r",
+						order = 4,
+						args = getArgs({61336,50334,53312,22812,17116,22842,29166,33357}),
+					},
+					paladin = {
+						type = 'group',
+						inline = true,
+						name = "|cffF58CBAPaladin|r",
+						order = 7,
+						args = getArgs({498,64205,1044,642,10278,6940,10308,31884,54428,20216,31821,20066}),
+					},
+					rogue = {
+						type = 'group',
+						inline = true,
+						name = "|cffFFF569Rogue|r",
+						order = 9,
+						args = getArgs({1766,51722,2094,14185,26669,8643,11305,26889,31224,57934,14177,13877,13750,51690,51713,36554}),
+					},
+					warrior	= {
+						type = 'group',
+						inline = true,
+						name = "|cffC79C6EWarrior|r",
+						order = 12,
+						args = getArgs({72,2565,676,20230,5246,871,18499,1719,23920,3411,55694,46924,12975,46968}),
+					},
+					priest	= {
+						type = 'group',
+						inline = true,
+						name = "|cffFFFFFFPriest|r",
+						order = 8,
+						args = getArgs({6346,10890,34433,48173,64843,64901,48158,33206,10060,14751,47585,15487,64044}),
+					},
+					shaman	= {
+						type = 'group',
+						inline = true,
+						name = "|cff0070DEShaman|r",
+						order = 10,
+						args = getArgs({8177,32182,2825,51514,58582,59159,16166,51533,30823,16188,16190,57994}),
+					},
+					mage = {
+						type = 'group',
+						inline = true,
+						name = "|cff69CCF0Mage|r",
+						order = 6,
+						args = getArgs({12051,1953,45438,2139,66,42917,43012,42945,43039,55342,12043,11129,44572,31687,11958,12472}),
+					},
+					dk	= {
+						type = 'group',
+						inline = true,
+						name = "|cffC41F3BDeath Knight|r",
+						order = 3,
+						args = getArgs({47476,48707,51052,48792,48743,47568,49028,49016,49039,49203,51271,49206}),
+					},
+					hunter = {
+						type = 'group',
+						inline = true,
+						name = "|cffABD473Hunter|r",
+						order = 5,
+						args = getArgs({781,3045,5384,19263,53271,60192,14311,13809,49012,19503,23989,34490,19577,19574}),
+					},
+					warlock = {
+						type = 'group',
+						inline = true,
+						name = "|cff9482C9Warlock|r",
+						order = 11,
+						args = getArgs({17928,54785,50589,47860,48020,18708,59672,17962,59172}),
+					},
+				},
+			},
+		}
+	}
 	AceConfig:RegisterOptionsTable("AAVBlackrock_options", options)
 	AceConfigDialog:AddToBlizOptions("AAVBlackrock_options", "AAVBlackrock")
 	
@@ -1242,22 +1284,36 @@ function spellArg(order, spellID, ...)
 end
 function setOption(info, value)
 	local name = info[#info]
-	for k,v in pairs(AAV_CDSTONAMES) do
-		if(name == v) then
-			atroxArenaViewerData.defaults.profile.slidercds[k] = value
+	local parent = info[#info-2]
+	if(parent ~= "slidercds") then
+		atroxArenaViewerData.defaults.profile[info[#info-1]] = value
+	elseif(parent == "slidercds") then
+		for k,v in pairs(AAV_CDSTONAMES) do
+			if(name == v) then
+				atroxArenaViewerData.defaults.profile[parent][k] = value
+			end
 		end
+	else
+		print("AAV: Something went wrong, please contact Jammin on discord @ Jammin#8283")
 	end
 end
 
 function getOption(info)
 	local name = info[#info]
-	local val = false
-	for k,v in pairs(AAV_CDSTONAMES) do
-		if(name == v) then
-			val = atroxArenaViewerData.defaults.profile.slidercds[k]
+	local parent = info[#info-2]
+	
+	if(parent ~= "slidercds") then
+		name = atroxArenaViewerData.defaults.profile[info[#info-1]]
+	elseif(parent == "slidercds") then
+		for k,v in pairs(AAV_CDSTONAMES) do
+			if(name == v) then
+				name = atroxArenaViewerData.defaults.profile[parent][k]
+			end
 		end
+	else
+		print("AAV: Something went wrong, please contact Jammin on discord @ Jammin#8283")
 	end
-	return val
+	return name
 end
 
 function SpellTexture(sid)

@@ -24,6 +24,7 @@ L.CONF_HELP_LINE2				= "ui"
 L.CONF_HELP_LINE3				= "delete all"
 L.CONF_HELP_LINE4				= "record — 是否记录比赛"
 L.CONF_HELP_LINE5				= "import"
+L.CONF_HELP_LINE6				= "options - open the options dialog"
 
 L.STATUS						= "状态"
 L.STATUS_IDLE					= "空闲"

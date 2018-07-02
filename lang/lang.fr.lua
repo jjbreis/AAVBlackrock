@@ -24,6 +24,7 @@ L.CONF_HELP_LINE2				= "ui"
 L.CONF_HELP_LINE3				= "delete all"
 L.CONF_HELP_LINE4				= "record - un match sera enregistré"
 L.CONF_HELP_LINE5				= "import"
+L.CONF_HELP_LINE6				= "options - open the options dialog"
 
 L.STATUS						= "Statut"
 L.STATUS_IDLE					= "Sans Occupation"

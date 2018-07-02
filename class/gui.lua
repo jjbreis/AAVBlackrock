@@ -863,19 +863,7 @@ function AAV_Gui:createMinimapIcon(parent, player)
 			info.hasArrow	= true
 			info.func		= nil
 			
-			UIDropDownMenu_AddButton(info, level)]]--
-
-			
-			-- OPTIONS
-			reset(info)
-			info.text       = "Options"
-			info.notCheckable = true
-			info.notClickable = false
-			info.hasArrow	= true
-			info.func       = nil
-			
-			UIDropDownMenu_AddButton(info, level)
-			
+			UIDropDownMenu_AddButton(info, level)]]--	
 						
 			-- DELETE MATCH
 			reset(info)
@@ -904,6 +892,16 @@ function AAV_Gui:createMinimapIcon(parent, player)
 			info.notClickable = false
 			info.hasArrow	= false
 			info.func       = function() StaticPopup_Show("AAV_IMPORT_DIALOG") end
+			
+			UIDropDownMenu_AddButton(info, level)
+			
+			-- OPTIONS
+			reset(info)
+			info.text       = "Options"
+			info.notCheckable = true
+			info.notClickable = false
+			info.hasArrow	= false
+			info.func       = function() InterfaceOptionsFrame_OpenToCategory("AAVBlackrock") end
 			
 			UIDropDownMenu_AddButton(info, level)
 			
@@ -976,7 +974,7 @@ function AAV_Gui:createMinimapIcon(parent, player)
 					end
 					UIDropDownMenu_AddButton(info, level)
 				
-				elseif (UIDROPDOWNMENU_MENU_VALUE == "Options") then
+		--[[		elseif (UIDROPDOWNMENU_MENU_VALUE == "Options") then
 					reset(info)
 					info.text = "Buffs and Debuffs"
 					info.notCheckable = true
@@ -1100,7 +1098,7 @@ function AAV_Gui:createMinimapIcon(parent, player)
 					info.hasArrow	= true
 					info.func = function() InterfaceOptionsFrame_OpenToCategory("AAVBlackrock") end
 					
-					UIDropDownMenu_AddButton(info, level)
+					UIDropDownMenu_AddButton(info, level) ]]--
 
 			elseif (UIDROPDOWNMENU_MENU_VALUE == "Export Match") then	
 			

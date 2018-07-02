@@ -680,6 +680,11 @@ AAV_CDSKILLS = {
 AAV_BUFFSTOSKILLS = {
 	[57993] = true,	-- Envenom
 }
+AAV_HEALTHOPTIONS = {
+[1] = "Percentage Health Value (100%)",
+[2] = "Absolute Health Value (20000)",
+[3] = "Deficit Health Value (-371/20000)",
+}
 
 
 function AAV_Util:split(str, pat)
