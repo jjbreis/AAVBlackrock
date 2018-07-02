@@ -219,6 +219,21 @@ function atroxArenaViewer:OnInitialize()
 							},
 						},
 					},
+					announceCheaters = {
+						type = 'group',
+						inline = true,
+						name = "Announcements",
+						order = 3,
+						args = {
+							cheatsopt = {
+								type = 'toggle',
+								name = "Announce Cheaters in /say",
+								width = "double",
+								desc = "Toggle if you want to announce when a cheat has been detected with /say",
+								order = 1,
+							},
+						},
+					},
 				},
 			},
 			slidercds = {
