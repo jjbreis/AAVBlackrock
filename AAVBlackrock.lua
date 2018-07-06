@@ -855,7 +855,7 @@ function atroxArenaViewer:COMBAT_LOG_EVENT_UNFILTERED(event, ...)
 						local spellname = GetSpellInfo(spellId)
 						SendChatMessage("CHEAT DETECTED: "..M:getDudesData()[sourceGUID].name.." cast "..spellname.." with a "..diff.." second cooldown, impossible without the use of a CD Hack" ,"SAY")
 					else
-						print("|cFFFF0000<AAV> Cheat Detector Triggered:|r CD Hack - Go to 'Show Stats' after the game to learn more")
+						print("|cFFFF0000<AAV> Cheat Detector Triggered:|r CD Hack - Check the Addon after the game to learn more")
 					end
 					isCdHacking = 1				
 

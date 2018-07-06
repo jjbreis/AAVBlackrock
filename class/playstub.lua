@@ -997,7 +997,6 @@ function AAV_PlayStub:createIndex()
 					
 					--For anticheat
 					if (tonumber(s[7])) then 
-							if (self.isCdHacking == false) then print("|cFFFF0000<AAV> Cheat Detector Triggered:|r CD Hack - Click  'Show Stats' to see more") end
 							self.isCdHacking = true
 							if (not self.cdhack[id]) then self.cdhack[id] = {} end
 							self.cdhack[id][tonumber(s[1])] = tonumber(s[7])..";"..tonumber(s[5])
