@@ -1136,19 +1136,20 @@ function AAV_PlayStub:getIndexValue(tick, playerid, type)
 	return value
 end
 function AAV_PlayStub:handleHackFrame(val)
-	if (val == "show") then
-		self.hackFrame.background:Show()
-		self.hackFrame.title:Show()
-		
-		for k, v in pairs (self.hackEntryList) do
-			self.hackEntryList[k]:Show()
-		end
-	elseif (val == "hide") then
-		self.hackFrame.background:Hide()
-		self.hackFrame.title:Hide()
-		
-		for k, v in pairs (self.hackEntryList) do
-			self.hackEntryList[k]:Hide()
+	if(isCdHacking) then
+		if (val == "show") then
+			self.hackFrame.background:Show()
+			self.hackFrame.title:Show()
+			for k, v in pairs (self.hackEntryList) do
+				self.hackEntryList[k]:Show()
+			end
+		elseif (val == "hide") then
+			self.hackFrame.background:Hide()
+			self.hackFrame.title:Hide()
+			
+			for k, v in pairs (self.hackEntryList) do
+				self.hackEntryList[k]:Hide()
+			end
 		end
 	end
 end
