@@ -33,6 +33,7 @@ function AAV_PlayStub:new()
 	self.cclist = {} -- used for preventing multiple ccs on same icon
 	self.cdlist = {} -- used to put cds on slider
 	self.cdhack = {}
+	self.hackEntryList = nil
 	self.idToName = {}
 	
 	----
@@ -696,7 +697,8 @@ function AAV_PlayStub:createPlayer(bracket, elapsed)
 	if (not self.player) then 
 		self.origin, self.player, self.maptext, self.replayButton, self.playButton = AAV_Gui:createPlayerFrame(self, bracket)
 		self.detail = AAV_Gui:createButtonDetail(self.origin)
-		self.hackInfo = AAV_Gui:createInformationHack(self.detail)
+		self.hackFrame = {}
+		self.hackFrame.background, self.hackFrame.title = AAV_Gui:createHackFrame(self.origin)
 		self.seeker = {}
 		self.seeker.bar, self.seeker.back, self.seeker.slide, self.seeker.speedval, self.seeker.speed = AAV_Gui:createSeekerBar(self.player, elapsed)
 		self.seeker.status = AAV_Gui:createStatusText(self.origin)
@@ -752,13 +754,11 @@ function AAV_PlayStub:createPlayer(bracket, elapsed)
 			if (self.viewdetail) then
 				self.player:Show()
 				self.detail:SetText(L.VIEW_STATS)
-				if(self.isCdHacking) then self.hackInfo:Show() end
 				self.stats:Hide()
 				-- go timer
 			else
 				self.player:Hide()
 				self.detail:SetText(L.VIEW_MATCH)
-				if(self.isCdHacking) then self.hackInfo:Hide() end
 				self.stats:Show()
 				-- stop timer
 			end
@@ -771,7 +771,7 @@ function AAV_PlayStub:createPlayer(bracket, elapsed)
 		self:setTick(1)
 		self.seeker.status:Hide()
 		self:handleSeeker("show")
-		self.hackInfo:Hide()
+		self:handleHackFrame("hide")
 		for k,v in pairs(self.sliderCD) do
 			self.sliderCD[k]:Hide()
 		end
@@ -793,7 +793,11 @@ function AAV_PlayStub:createPlayer(bracket, elapsed)
 	self:createIndex()
 	self:setSeekerTooltip()
 	self.detail:Show()
-	if(self.isCdHacking) then self.hackInfo:Show() end
+	if(self.isCdHacking) then 
+		self.hackEntryList = self:populateHackFrame(self.hackFrame.background.content, self:getMatch()["combatans"]["dudes"], self.cdhack)
+		self:handleHackFrame("show") 
+		
+	end
 
 	self:createStats(self:getMatch()["teams"], self:getMatch()["combatans"]["dudes"], bracket, self.cdhack)
 	self.sliderCD = {}
@@ -996,7 +1000,7 @@ function AAV_PlayStub:createIndex()
 					if (tonumber(s[7])) then 
 							if (self.isCdHacking == false) then print("|cFFFF0000<AAV> Cheat Detector Triggered:|r CD Hack - Click  'Show Stats' to see more") end
 							self.isCdHacking = true
-							self.cdhack[id] = {}
+							if (not self.cdhack[id]) then self.cdhack[id] = {} end
 							self.cdhack[id][tonumber(s[1])] = tonumber(s[7])..";"..tonumber(s[5])
 					end
 					
@@ -1132,4 +1136,81 @@ function AAV_PlayStub:getIndexValue(tick, playerid, type)
 		end
 	end
 	return value
+end
+function AAV_PlayStub:handleHackFrame(val)
+	if (val == "show") then
+		self.hackFrame.background:Show()
+		self.hackFrame.title:Show()
+		
+		for k, v in pairs (self.hackEntryList) do
+			self.hackEntryList[k]:Show()
+		end
+	elseif (val == "hide") then
+		self.hackFrame.background:Hide()
+		self.hackFrame.title:Hide()
+		
+		for k, v in pairs (self.hackEntryList) do
+			self.hackEntryList[k]:Hide()
+		end
+	end
+end
+
+function AAV_PlayStub:populateHackFrame(parent, playerdata, hacklist)
+	local hackEntryText = {}
+	local i = 1
+	hackEntryText[i] = AAV_Gui:createHackEntry(parent)
+	hackEntryText[i]:SetText("Cooldown Hack:")
+	hackEntryText[i]:SetTextColor(0.9,0.71,0.15)
+	hackEntryText[i]:SetPoint("TOPLEFT", parent, 5, -20 - (25*(i-1)))
+	for k,v in pairs (playerdata) do
+		if(hacklist[(v.ID)] ~=nil) then
+			i = i + 1
+			hackEntryText[i] = AAV_Gui:createHackEntry(parent)
+			hackEntryText[i]:SetText("\124TInterface\\Addons\\AAVBlackrock\\res\\" .. v.class .. ".tga:30\124t "..v.name)
+			hackEntryText[i]:SetTextColor(AAV_Util:getTargetColor(v, true))
+			hackEntryText[i]:SetPoint("TOPLEFT", parent, 5, -20 - (25*(i-1)))
+			
+			for m,p in pairs (hacklist[v.ID]) do
+				local tmp = AAV_Util:split(p, ';')
+				local oldCastTime = m-tmp[1]
+				spellOne = "Cast "..AAV_Util:SpellTexture(tmp[2]).." at "..oldCastTime.." seconds"
+				spellTwo = "Cast "..AAV_Util:SpellTexture(tmp[2]).." at "..m.." seconds"
+				--FIRST SPELL CAST
+				i = i + 1
+				hackEntryText[i] = AAV_Gui:createHackEntry(parent)
+				hackEntryText[i]:SetText(spellOne)
+				hackEntryText[i]:SetPoint("TOPLEFT", parent, 5, -30 - (25*(i-1)))
+				--SECOND SPELL CAST
+				i = i + 1
+				hackEntryText[i] = AAV_Gui:createHackEntry(parent)
+				hackEntryText[i]:SetText(spellTwo)
+				hackEntryText[i]:SetPoint("TOPLEFT", parent, 5, -30 - (25*(i-1)))
+				--DIFF BETWEEN THE TWO
+				i = i + 1
+				hackEntryText[i] = AAV_Gui:createHackEntry(parent)
+				hackEntryText[i]:SetText("= "..tmp[1].." seconds Cooldown")
+				hackEntryText[i]:SetTextColor(0.90,0,0)
+				hackEntryText[i]:SetPoint("TOPLEFT", parent, 55, -30 - (25*(i-1)))
+
+			end
+		end
+	end 
+	local maxvalue = 1
+	if (((i-1)*25) - 240 > 0) then  maxvalue = ((i-1)*25) - 240 end
+	parent:SetSize(parent:GetWidth(),(i-1)*25)
+	parent:GetParent().scrollbar:SetMinMaxValues(1, maxvalue) 
+	parent:GetParent():SetScript("OnMouseWheel", function(self, delta)
+		local cur_val = parent:GetParent().scrollbar:GetValue()
+		local min_val, max_val = parent:GetParent().scrollbar:GetMinMaxValues()
+
+		if delta < 0 and cur_val < max_val then
+			cur_val = math.min(max_val, cur_val + 15)
+			parent:GetParent().scrollbar:SetValue(cur_val)			
+		elseif delta > 0 and cur_val > min_val then
+			cur_val = math.max(min_val, cur_val - 15)
+			parent:GetParent().scrollbar:SetValue(cur_val)		
+		end	
+	 end)
+	 
+	return hackEntryText
 end

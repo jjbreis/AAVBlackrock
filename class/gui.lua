@@ -431,33 +431,8 @@ function AAV_Gui:createDetailTeam(parent, num, bracket)
 	team:Show()	
 end
 
-function AAV_Gui:createInformationHack(parent)
-	
-	local infoicon = CreateFrame("Frame", "$parentInformation", parent)
-	infoicon:SetWidth(16)
-	infoicon:SetHeight(16)
-	infoicon:SetPoint("BOTTOMLEFT", 10, 4)
-	infoicon:EnableMouse(true)
-	infoicon:SetScript("OnEnter", function() 
-		infoicon:SetScript("OnUpdate", function()
-			AAV_Gui:SetGameTooltip("CD HACK DETECTED" , 0, infoicon)
-		end)
-	end)
-	infoicon:SetScript("OnLeave", function() 
-		GameTooltip:FadeOut()
-		infoicon:SetScript("OnUpdate", nil)
-	end)
-	
-	infoicon:Hide()
-	
-	local infoicontex = infoicon:CreateTexture(nil)
-	infoicontex:SetAllPoints(infoicon)
-	infoicontex:SetTexture("Interface\\FriendsFrame\\InformationIcon")
-	infoicon.texture = infoicontex
-	infoicontex:Show()
-	
-	return infoicon
-end
+
+
 function AAV_Gui:createButtonDetail(parent)
 	
 	local detail = CreateFrame("BUTTON", "$parentViewDetail", parent, "UIPanelButtonTemplate")
@@ -537,53 +512,8 @@ function AAV_Gui:createDetailEntry(parent)
 	mmr:SetParent(entry)
 	mmr:SetPoint("BOTTOMLEFT", rc, 80, 0)
 	mmr:SetTextColor(1, 1, 1)
-	
-	
-	--CHEAT DETECTOR
-	local infobutton = CreateFrame("Frame", "$parentInfo", entry)
-	infobutton:SetWidth(20)
-	infobutton:SetHeight(20)
-	infobutton:EnableMouse(true)
-	infobutton:SetScript("OnEnter", function() 
-	infobutton:SetScript("OnUpdate", function()
-	AAV_Gui:SetGameTooltip("CD HACK DETECTED" , 0, infobutton)
-		end)
-	end)
-	infobutton:SetScript("OnLeave", function() 
-		GameTooltip:FadeOut()
-		infobutton:SetScript("OnUpdate", nil)
-	end)
-	
-	infobutton:Hide()
-	
-	local infotexture = infobutton:CreateTexture(nil)
-	infotexture:SetAllPoints(infobutton)
-	infotexture:SetTexture("Interface\\FriendsFrame\\InformationIcon")
-	infobutton.texture = infotexture
-	infotexture:Show()
-	
-	local cheatericon = CreateFrame("Frame", "$parentcheatericon", entry)
-	cheatericon:SetWidth(20)
-	cheatericon:SetHeight(20)
-	
-	local tee = cheatericon:CreateTexture(nil)
-	--tee:SetTexture()
-	tee:SetAllPoints(cheatericon)
-	cheatericon.texture = tee
-	cheatericon:SetPoint("BOTTOMLEFT", infobutton, 30, 0)
-	cheatericon:Show()
 
-	local cheattext = parent:CreateFontString("$parentcheattext", "ARTWORK", "GameFontNormal")
-	cheattext:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE")
-	cheattext:SetJustifyH("LEFT")
-	cheattext:SetParent(entry)
-	cheattext:SetPoint("BOTTOMLEFT", cheatericon, 25, 0)
-	cheattext:SetTextColor(1, 1, 1)
-	cheattext:Show()
-
-
-	
-	return entry, icon, name, dd, hd, h, rc, mmr, cheatericon, cheattext, infobutton
+	return entry, icon, name, dd, hd, h, rc, mmr
 end
 
 function AAV_Gui:createStatusText(parent)
@@ -1291,4 +1221,80 @@ function AAV_Gui:createSliderCD(parent, timestamp, spellID, TeamID, elapsed, sou
 	
 	
 	return arrowframe, arrrowtex
+end
+function AAV_Gui:createHackEntry(parent)
+	local cheattext = parent:CreateFontString("$parentcheattext", "ARTWORK", "GameFontNormal")
+	cheattext:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE")
+	cheattext:SetJustifyH("LEFT")
+	cheattext:SetParent(parent)
+	cheattext:SetTextColor(1, 1, 1)
+	cheattext:Show()
+	return cheattext
+end
+function AAV_Gui:createHackFrame(parent, hackInfo)
+	
+	--HACKFRAME
+	local hackframe = CreateFrame("ScrollFrame", "hackframe", parent)
+	hackframe:SetWidth(200)
+	hackframe:SetHeight(300)
+	hackframe:SetPoint("RIGHT", 2 + hackframe:GetWidth(), 0)
+	hackframe:EnableMouseWheel(true)
+	hackframe:SetBackdrop({
+	  bgFile="Interface\\DialogFrame\\UI-DialogBox-Background",
+	  edgeFile="Interface\\DialogFrame\\UI-DialogBox-Border",
+	  tile=1, tileSize=10, edgeSize=10, 
+	  insets={left=3, right=3, top=3, bottom=3}
+	})
+--	hackframe:SetMovable(true)
+--	hackframe:EnableMouse(true)
+--	hackframe:SetScript("OnMouseDown", hackframe.StartMoving)
+--	hackframe:SetScript("OnMouseUp", hackframe.StopMovingOrSizing)
+	hackframe:Show()
+	
+	-- FRAME TITLE FRAME
+	local frametitle = CreateFrame("Frame", "$parentTitle", hackframe)
+	frametitle:SetHeight(30)
+	frametitle:SetPoint("TOP", 0, 18)
+	frametitle:SetBackdrop({
+	  bgFile="Interface\\DialogFrame\\UI-DialogBox-Background",
+	  edgeFile="Interface\\DialogFrame\\UI-DialogBox-Border",
+	  tile=1, tileSize=10, edgeSize=20, 
+	  insets={left=3, right=3, top=3, bottom=3}, 
+	})
+	frametitle:SetBackdropColor(0, 0, 0, 1)
+	--FRAME TITLE TEXT
+	local frametitletext = frametitle:CreateFontString("$parentTitletext", "ARTWORK", "GameFontNormal")
+	frametitletext:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
+	frametitletext:SetText("Detected Cheats")
+	frametitletext:SetPoint("CENTER", frametitle, 0, 0)
+	frametitle:SetWidth(120)
+	frametitletext:Show()
+	
+	--scrollbar 
+	scrollbar = CreateFrame("Slider", nil, hackframe, "UIPanelScrollBarTemplate") 
+	scrollbar:SetPoint("TOPLEFT", hackframe, "TOPRIGHT", 4, -16) 
+	scrollbar:SetPoint("BOTTOMLEFT", hackframe, "BOTTOMRIGHT", 4, 16) 
+	scrollbar:SetMinMaxValues(1, 200) 
+	scrollbar:SetValueStep(1) 
+	scrollbar.scrollStep = 1 
+	scrollbar:SetValue(0) 
+	scrollbar:SetWidth(16) 
+	scrollbar:SetScript("OnValueChanged", 
+	function (self, value) 
+	self:GetParent():SetVerticalScroll(value) 
+	end) 
+	local scrollbg = scrollbar:CreateTexture(nil, "BACKGROUND")
+	scrollbg:SetAllPoints(scrollbar)
+	scrollbg:SetTexture(0, 0, 0, 0.4)
+	hackframe.scrollbar = scrollbar
+	
+	--content frame 
+	local content = CreateFrame("Frame", nil, hackframe)
+	content:SetSize(hackframe:GetWidth(),0)
+	content:SetAllPoints()
+	hackframe:SetScrollChild(content)
+	hackframe.content = content 
+	
+	return hackframe, frametitletext
+	
 end

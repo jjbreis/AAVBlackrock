@@ -10,9 +10,9 @@ function AAV_TeamStats:new(parent, teamdata, matchdata, team, bracket, cdhack)
 	self.entries = {}
 	for i = 1, 5 do
 		self.entries[i] = {}
-		self.entries[i]["entry"], self.entries[i]["icon"], self.entries[i]["name"], self.entries[i]["damage"], self.entries[i]["high"], self.entries[i]["heal"], self.entries[i]["rating"], self.entries[i]["mmr"], self.entries[i]["cheaticon"], self.entries[i]["cheattext"], self.entries[i]["infobutton"] = AAV_Gui:createDetailEntry(parent)
+		self.entries[i]["entry"], self.entries[i]["icon"], self.entries[i]["name"], self.entries[i]["damage"], self.entries[i]["high"], self.entries[i]["heal"], self.entries[i]["rating"], self.entries[i]["mmr"] = AAV_Gui:createDetailEntry(parent)
 	end
-	self:setValue(parent, teamdata, matchdata, team, bracket, cdhack)
+	self:setValue(parent, teamdata, matchdata, team, bracket)
 	
 	return self
 	
@@ -21,13 +21,10 @@ end
 function AAV_TeamStats:hideAll()
 	for k,v in pairs(self.entries) do
 		v["entry"]:Hide()
-		v["cheaticon"]:Hide()
-		v["cheattext"]:Hide()
-		v["infobutton"]:Hide()
 	end
 end
 
-function AAV_TeamStats:setValue(parent, teamdata, matchdata, team, bracket, cdhack)
+function AAV_TeamStats:setValue(parent, teamdata, matchdata, team, bracket)
 	
 	self.parent = parent
 	self.team = team
@@ -58,24 +55,6 @@ function AAV_TeamStats:setValue(parent, teamdata, matchdata, team, bracket, cdha
 			self.entries[i]["heal"]:SetText(w.hdone)
 			self.entries[i]["rating"]:SetText(rating)
 			self.entries[i]["mmr"]:SetText(mmr)
-			
-			if(cdhack ~= nil) then
-				if(cdhack[(w.ID)] ~=nil) then
-					local example
-					local temp
-					
-					for m,p in pairs (cdhack[w.ID]) do
-						tmp = AAV_Util:split(p, ';')
-						example = w.name.." used "..GetSpellInfo(tmp[2]).." at "..m.." seconds with a CD of "..tmp[1]
-					end
-					self.entries[i]["cheaticon"]:Show()
-					self.entries[i]["cheaticon"].texture:SetTexture("Interface\\Addons\\AAVBlackrock\\res\\" .. w.class .. ".tga")
-					self.entries[i]["cheattext"]:SetText(example)
-					self.entries[i]["cheattext"]:Show()
-					self.entries[i]["infobutton"]:SetPoint("BOTTOMLEFT", parent, 10,  10+(50*bracket) - ((team-1) * (25*bracket)) - (25 * (i-1)))
-					self.entries[i]["infobutton"]:Show()
-				end
-			end
 			i = i + 1
 		end
 	end

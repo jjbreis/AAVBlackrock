@@ -256,7 +256,7 @@ function atroxArenaViewer:OnInitialize()
 						args = {
 							trinket = {
 								type = 'toggle',
-								name = SpellTexture(42292).."PvP Trinket/Every Man for Himself",
+								name = AAV_Util:SpellTexture(42292).."PvP Trinket/Every Man for Himself",
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(42292));
 								end,
@@ -1330,9 +1330,4 @@ function getOption(info)
 	return name
 end
 
-function SpellTexture(sid)
-	local spellname,_,icon = GetSpellInfo(sid)
-	if spellname ~= nil then
-		return "\124T"..icon..":24\124t"
-	end
-end
+

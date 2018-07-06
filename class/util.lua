@@ -778,3 +778,9 @@ end
 function AAV_Util:getImportskills()
 	return importantskills
 end
+function AAV_Util:SpellTexture(sid)
+	local spellname,_,icon = GetSpellInfo(sid)
+	if spellname ~= nil then
+		return "\124T"..icon..":24\124t"
+	end
+end
