@@ -796,7 +796,6 @@ function AAV_PlayStub:createPlayer(bracket, elapsed)
 	if(self.isCdHacking) then 
 		self.hackEntryList = self:populateHackFrame(self.hackFrame.background.content, self:getMatch()["combatans"]["dudes"], self.cdhack)
 		self:handleHackFrame("show") 
-		
 	end
 
 	self:createStats(self:getMatch()["teams"], self:getMatch()["combatans"]["dudes"], bracket, self.cdhack)

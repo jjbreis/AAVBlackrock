@@ -1249,7 +1249,7 @@ function AAV_Gui:createHackFrame(parent, hackInfo)
 --	hackframe:EnableMouse(true)
 --	hackframe:SetScript("OnMouseDown", hackframe.StartMoving)
 --	hackframe:SetScript("OnMouseUp", hackframe.StopMovingOrSizing)
-	hackframe:Show()
+--	hackframe:Show()
 	
 	-- FRAME TITLE FRAME
 	local frametitle = CreateFrame("Frame", "$parentTitle", hackframe)
