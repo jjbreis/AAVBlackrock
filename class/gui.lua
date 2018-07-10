@@ -90,15 +90,15 @@ function AAV_Gui:createPlayerFrame(obj, bracket)
 	--REPLAY BUTTON
 	local replay = CreateFrame("BUTTON", "$parentViewreplay", f, "UIPanelButtonTemplate")
 	replay:SetPoint("BOTTOMRIGHT", -190, 15)
-	replay:SetWidth(125)
+	replay:SetWidth(140)
 	replay:SetHeight(25)
 	replay:Show()
 	replay:SetText("Replay from 0.00")
 	
 	--PAUSE BUTTON
 	local pause = CreateFrame("BUTTON", "$parentPlayButton", f, "UIPanelButtonTemplate")
-	pause:SetPoint("BOTTOMLEFT", 10, 70)
-	pause:SetWidth(38)
+	pause:SetPoint("BOTTOMLEFT", 5, 70)
+	pause:SetWidth(45)
 	pause:SetHeight(25)
 	pause:SetText("Pause")
 	pause:Show()
@@ -1174,9 +1174,9 @@ function AAV_Gui:createSliderCD(parent, timestamp, spellID, TeamID, elapsed, sou
 	end
 	
   -- ARROWFRAME
-	local arrowframe = CreateFrame("Frame", "$parentarrow"..spellID, parent)
-	arrowframe:SetWidth(8)
-	arrowframe:SetHeight(8)
+	local arrowframe = CreateFrame("Frame", "$parentCD"..spellID, parent)
+	arrowframe:SetWidth(10)
+	arrowframe:SetHeight(10)
 	arrowframe:SetFrameStrata("HIGH")
 	
 	local actualpoint= math.floor(percent*parent:GetWidth())
@@ -1189,7 +1189,7 @@ function AAV_Gui:createSliderCD(parent, timestamp, spellID, TeamID, elapsed, sou
 	arrowframe:Show()
 	
 	--ICON FRAME
-	local iconframe = CreateFrame("Frame", "$parentarrow"..spellID, arrowframe)
+	local iconframe = CreateFrame("Frame", "$parenticon", arrowframe)
 	iconframe:SetWidth(16)
 	iconframe:SetHeight(16)
 	iconframe:SetFrameStrata("HIGH")
@@ -1245,6 +1245,7 @@ function AAV_Gui:createHackFrame(parent, hackInfo)
 	  tile=1, tileSize=10, edgeSize=10, 
 	  insets={left=3, right=3, top=3, bottom=3}
 	})
+	hackframe:Hide()
 --	hackframe:SetMovable(true)
 --	hackframe:EnableMouse(true)
 --	hackframe:SetScript("OnMouseDown", hackframe.StartMoving)

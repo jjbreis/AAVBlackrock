@@ -133,14 +133,14 @@ function AAV_TableGui:createMatchesTable()
 			["width"] = 100,
 		}, -- [3]
 		{
-			["name"] = " ",
+			["name"] = "",
 			["width"] = 85,
 			["align"] = "RIGHT",
 		}, -- [4]
 		{
-			["name"] = " ",
+			["name"] = "",
 			["width"] = 25,
-			["align"] = "CENTER",
+			["align"] = "RIGHT",
 		}, -- [5]
 		{
 			["name"] = " ",
@@ -148,22 +148,27 @@ function AAV_TableGui:createMatchesTable()
 			["align"] = "LEFT",
 		}, -- [6]
 		{
-			["name"] = "Click to Replay",
-			["width"] = 125,
+			["name"] = "",
+			["width"] = 35,
 			["align"] = "CENTER",
 		}, -- [7]
 		{
+			["name"] = "Click to Replay",
+			["width"] = 125,
+			["align"] = "CENTER",
+		}, -- [8]
+		{
 			["name"] = "Result",
 			["width"] = 50,		
-		}, -- [8]
+		}, -- [9]
 		{
 			["name"] = "Rating",
 			["width"] = 60,		
-		}, -- [9]
+		}, -- [10]
 		{
 			["name"] = " ",
 			["width"] = 50,		
-		}, -- [10]
+		}, -- [11]
 	}; 
 
 	matchesTable = ScrollingTable:CreateST(cols, 15, 30, nil, matchesFrame);
@@ -198,6 +203,7 @@ function AAV_TableGui:fillMatchesTable()
 		local replayColor = { ["r"] = 1.00, ["g"] = 0.49, ["b"] = 0.04, ["a"] = 1.0 };
 		local teamOne = {}
 		local teamTwo = {}
+		local cheatIcon = ""
 		
 		for row = 1, #atroxArenaViewerData.data do
 			if not data[row] then
@@ -206,7 +212,7 @@ function AAV_TableGui:fillMatchesTable()
 			data[row].cols = {};
 			
 			local startTime, elapsedStr, mapname, TeamUm, matchUp,TeamDois, matchResult, teamOneRating, replay, cheatDetected = self:determineMatchSummary(row)
-			if(cheatDetected == 1) then	TeamDois = TeamDois.."   \124TInterface\\FriendsFrame\\InformationIcon:22\124t" end
+			if(cheatDetected == 1) then cheatIcon = "\124TInterface\\FriendsFrame\\InformationIcon:22\124t" else cheatIcon= "" end
 
 			data[row].cols[1] = { ["value"] = startTime };
 			data[row].cols[2] = { ["value"] = elapsedStr };
@@ -214,20 +220,21 @@ function AAV_TableGui:fillMatchesTable()
 			data[row].cols[4] = { ["value"] = TeamUm };
 			data[row].cols[5] = { ["value"] = matchUp };
 			data[row].cols[6] = { ["value"] = TeamDois };
-			data[row].cols[7] = { ["value"] = "ID: "..replay };
-			data[row].cols[8] = { ["value"] = matchResult };
-			data[row].cols[9] = { ["value"] = teamOneRating };
-			data[row].cols[10] = { ["value"] = "DELETE" };
+			data[row].cols[7] = { ["value"] = cheatIcon };
+			data[row].cols[8] = { ["value"] = "ID: "..replay };
+			data[row].cols[9] = { ["value"] = matchResult };
+			data[row].cols[10] = { ["value"] = teamOneRating };
+			data[row].cols[11] = { ["value"] = "DELETE" };
 			
 			if (matchResult and matchResult == "Won") then
-				data[row].cols[8].color = wonMatchColor
 				data[row].cols[9].color = wonMatchColor
+				data[row].cols[10].color = wonMatchColor
 			elseif (matchResult and matchResult == "Lost") then
-				data[row].cols[8].color = lostMatchColor
 				data[row].cols[9].color = lostMatchColor
+				data[row].cols[10].color = lostMatchColor
 			end
-			data[row].cols[10].color = deleteColor
-			data[row].cols[7].color = replayColor
+			data[row].cols[11].color = deleteColor
+			data[row].cols[8].color = replayColor
 		end
 	else
 		data[1] = {};
